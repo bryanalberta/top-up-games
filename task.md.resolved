@@ -1,0 +1,24 @@
+# Sultan Top Up - Project Tasks
+
+## 1. Planning & Setup
+- [x] Create implementation plan
+- [/] Initialize Next.js frontend project
+- [/] Initialize Node.js backend project
+- [ ] Setup Database ORM (Prisma)
+
+## 2. Backend Development (Node.js/Express)
+- [ ] Setup Express server & routing
+- [ ] Create Database schema (Users, Games, Transactions)
+- [ ] Implement Games/Products API
+- [ ] Implement Transaction API
+
+## 3. Frontend Development (Next.js)
+- [ ] Setup modern UI layout (Tailwind, Dark mode)
+- [ ] Build Home Page (Hero section, Game list)
+- [ ] Build Game Detail Page (Top up form)
+- [ ] Build Transaction Success Page
+
+## 4. Integration & Verification
+- [ ] Connect Frontend to Backend API
+- [ ] End-to-end testing
+- [ ] Final polish & documentation
