@@ -12,7 +12,7 @@ Proyek web ini dikembangkan oleh kelompok kami:
 2. **Ahmad Nurhidayat Maulana** (NIM: 223140129) - *Frontend Developer (UI/UX)* (Merancang antarmuka pengguna dengan Tailwind CSS, membuat animasi Framer Motion, dan memastikan desain responsif)
 3. **Allen Virgustiyan Prakoso** (NIM: 223140136) - *Backend Developer (API & Database)* (Membangun REST API menggunakan Express.js dan mengelola skema database PostgreSQL menggunakan Prisma ORM)
 4. **[Nama Anggota 4]** (NIM: ...) - *Backend Developer (Payment & Security)* (Mengimplementasikan Payment Gateway Midtrans, serta mengelola keamanan autentikasi JWT dan Enkripsi)
-5. **[Nama Anggota 5]** (NIM: ...) - *Frontend Developer (Integration)* (Menghubungkan antarmuka UI Frontend dengan API Backend, menangani *state management*, dan *error handling*)
+5. **Abdul Muntolib Fajarkhan** (NIM: 223140120) - *Frontend Developer (Integration)* (Menghubungkan antarmuka UI Frontend dengan API Backend, menangani *state management*, dan *error handling*)
 6. **[Nama Anggota 6]** (NIM: ...) - *Quality Assurance & System Analyst* (Melakukan pengujian sistem (QA), menyusun dokumentasi proyek, dan melakukan *deployment*)
 
 *(Catatan: Silakan lengkapi sisa nama dan NIM anggota yang belum terisi di atas)*
