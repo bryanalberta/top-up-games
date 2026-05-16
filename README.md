@@ -8,7 +8,7 @@ Sultan Top Up adalah platform layanan transaksi instan untuk top up berbagai mac
 
 Proyek web ini dikembangkan oleh kelompok kami:
 
-1. **Bryan Alberta** (NIM: 223140148) - *Role/Tugas*
+1. **Bryan Alberta Hildan Pradana** (NIM: 223140148) - *Role/Tugas*
 2. **Ahmad Nurhidayat Maulana** (NIM: 223140129) - *Role/Tugas*
 3. **Allen Virgustiyan Prakoso** (NIM: 223140136) - *Role/Tugas*
 4. **[Nama Anggota 4]** (NIM: ...) - *Role/Tugas*
