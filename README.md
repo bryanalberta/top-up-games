@@ -46,7 +46,6 @@ Proyek ini dibangun menggunakan arsitektur Modern Full-Stack (Frontend & Backend
 
 ## 📸 Tampilan Antarmuka (Screenshots)
 
-*(Silakan tambahkan gambar screenshot dari proyek Anda dan simpan di folder `public` atau `assets`, lalu ubah path di bawah ini)*
 
 | Halaman Utama | Halaman Transaksi Game | Halaman Admin Dashboard |
 | :---: | :---: | :---: |
