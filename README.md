@@ -4,6 +4,8 @@
 
 Sultan Top Up adalah platform layanan transaksi instan untuk top up berbagai macam game populer. Didesain dengan antarmuka yang sangat modern (Cyberpunk & Premium Esports Theme) serta dilengkapi dengan fitur keamanan dan kecepatan transaksi kilat.
 
+> **🌍 Live Demo:** *(Opsional: Masukkan link Vercel/Hosting Anda di sini jika ada)*
+
 ## 👥 Anggota Kelompok
 
 Proyek web ini dikembangkan oleh kelompok kami:
@@ -14,8 +16,6 @@ Proyek web ini dikembangkan oleh kelompok kami:
 4. **Iswara Pranidana Kartika Putra** (NIM: 223140107) - *Backend Developer (Payment & Security)* (Mengimplementasikan Payment Gateway Midtrans, serta mengelola keamanan autentikasi JWT dan Enkripsi)
 6. **Abdul Muntolib Fajarkhan** (NIM: 223140120) - *Frontend Developer (Integration)* (Menghubungkan antarmuka UI Frontend dengan API Backend, menangani *state management*, dan *error handling*)
 7. **Dani Ahmad Kafabih** (NIM: 223140145) - *Quality Assurance & System Analyst* (Melakukan pengujian sistem (QA), menyusun dokumentasi proyek, dan melakukan *deployment*)
-
-*(Catatan: Silakan lengkapi sisa nama dan NIM anggota yang belum terisi di atas)*
 
 ## 🚀 Teknologi yang Digunakan
 
@@ -44,6 +44,58 @@ Proyek ini dibangun menggunakan arsitektur Modern Full-Stack (Frontend & Backend
 - 🕒 **Dukungan 24/7:** Sistem berjalan online secara otomatis kapanpun dibutuhkan.
 - 💳 **Integrasi Midtrans:** Mendukung berbagai metode pembayaran di Indonesia.
 
+## 📸 Tampilan Antarmuka (Screenshots)
+
+*(Silakan tambahkan gambar screenshot dari proyek Anda dan simpan di folder `public` atau `assets`, lalu ubah path di bawah ini)*
+
+| Halaman Utama | Halaman Transaksi Game | Halaman Admin Dashboard |
+| :---: | :---: | :---: |
+| ![Home](./frontend/public/screenshot-home.png) *(Contoh)* | ![Transaksi](./frontend/public/screenshot-transaksi.png) *(Contoh)* | ![Admin](./frontend/public/screenshot-admin.png) *(Contoh)* |
+
+## 📂 Struktur Folder Proyek
+
+Proyek ini dipisah menjadi dua repositori utama di dalam satu folder (Monorepo style) untuk memisahkan *concern* antara UI dan logika API:
+
+```text
+top-up-games/
+├── frontend/               # Aplikasi Klien (Next.js)
+│   ├── public/             # Aset gambar statis
+│   ├── src/
+│   │   ├── app/            # App Router untuk halaman web
+│   │   ├── components/     # Komponen UI React (Navbar, Footer, Card)
+│   │   └── lib/            # Fungsi utilitas klien
+│   └── tailwind.config.ts  # Konfigurasi Styling
+│
+└── backend/                # Aplikasi Server API (Express.js)
+    ├── prisma/
+    │   ├── schema.prisma   # Struktur Database ORM
+    │   └── seed.ts         # Data awal (seeding) untuk database
+    └── src/
+        ├── controllers/    # Logika proses dari setiap endpoint
+        ├── routes/         # Definisi jalur API (API Routes)
+        └── utils/          # Konfigurasi Midtrans & Digiflazz
+```
+
+## 🗄️ Skema Database (ERD)
+
+Aplikasi ini menggunakan PostgreSQL dengan **Prisma ORM**. Berikut adalah entitas utama dalam sistem kami:
+- **User/Admin:** Mengelola autentikasi dan akses dashboard.
+- **Game & Kategori:** Menyimpan informasi katalog game.
+- **Product (Item):** Daftar nominal top-up dan harga (berelasi dengan Game).
+- **Transaction (Order):** Menyimpan riwayat pembelian, status pembayaran dari Midtrans, dan nomor tujuan.
+
+## 📡 Dokumentasi API Utama
+
+Beberapa endpoint REST API utama yang tersedia di sisi Backend:
+
+| Method | Endpoint | Deskripsi |
+| --- | --- | --- |
+| `GET` | `/api/games` | Mengambil seluruh katalog game |
+| `GET` | `/api/games/:id` | Mengambil detail game beserta produk/item top-up |
+| `POST` | `/api/transactions` | Membuat pesanan baru & mendapatkan URL Midtrans |
+| `GET` | `/api/transactions/:orderId` | Mengecek status pesanan |
+| `POST` | `/api/auth/login` | Login khusus Admin untuk mendapatkan token JWT |
+
 ## ⚙️ Cara Menjalankan Proyek Secara Lokal
 
 Pastikan Anda sudah menginstal **Node.js**, **npm**, dan memiliki database **PostgreSQL** yang berjalan.
@@ -54,37 +106,49 @@ git clone https://github.com/bryanalberta/top-up-games.git
 cd top-up-games
 ```
 
-### 2. Setup Backend
+### 2. Setup Backend (API Server)
+Buka terminal dan jalankan:
 ```bash
 cd backend
-# Install dependensi
 npm install
+```
 
-# Buat file .env dan sesuaikan dengan konfigurasi database & midtrans Anda
-# (Silakan lihat .env.example jika ada, atau sesuaikan variabel environment)
+Buat file `.env` di dalam folder `backend` berdasarkan `.env.example`, minimal berisi:
+```env
+# URL Koneksi PostgreSQL Anda
+DATABASE_URL="postgresql://username:password@localhost:5432/topup_db"
+# Kunci Server Midtrans
+MIDTRANS_SERVER_KEY="SB-Mid-server-xxxx"
+# Rahasia untuk JWT Token
+JWT_SECRET="rahasia_super_aman"
+```
 
-# Jalankan migrasi Prisma
+Setelah `.env` siap, jalankan migrasi database dan server:
+```bash
 npx prisma generate
 npx prisma db push
-
-# Jalankan server development
 npm run dev
 ```
-Backend akan berjalan di `http://localhost:5000` (atau port yang disetel di `.env`).
+Backend akan berjalan di `http://localhost:5000`.
 
-### 3. Setup Frontend
-Buka terminal baru:
+### 3. Setup Frontend (Web UI)
+Buka terminal baru dan jalankan:
 ```bash
 cd frontend
-# Install dependensi
 npm install
+```
 
-# Buat file .env.local dan arahkan ke API Backend (contoh: NEXT_PUBLIC_API_URL=http://localhost:5000)
+Buat file `.env` atau `.env.local` di dalam folder `frontend`, berisi:
+```env
+# URL tempat Backend berjalan
+NEXT_PUBLIC_API_URL="http://localhost:5000/api"
+```
 
-# Jalankan development server
+Jalankan server tampilan web:
+```bash
 npm run dev
 ```
-Frontend akan berjalan di `http://localhost:3000`.
+Frontend akan berjalan di `http://localhost:3000`. Buka alamat tersebut di browser Anda.
 
 ---
-*Dibuat untuk memenuhi tugas kelompok / project web.*
+*Dibuat untuk memenuhi tugas kelompok / project pemrograman web.*
