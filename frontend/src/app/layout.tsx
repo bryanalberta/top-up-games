@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
-import { Outfit } from 'next/font/google';
+import { Outfit, Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import Navbar from '../components/Navbar';
 import { ThemeProvider } from '../components/ThemeProvider';
 import { Toaster } from 'sonner';
 import './globals.css';
 import { Diamond, ShieldCheck, Zap } from 'lucide-react';
 
-const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit', weight: ['300', '400', '500', '600', '700', '800', '900'] });
+const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
+const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-jakarta' });
+const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains' });
 
 export const metadata: Metadata = {
   title: 'Sultan Top Up | Platform Top Up Game Cepat & Termurah',
@@ -20,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" suppressHydrationWarning>
-      <body className={`${outfit.variable} font-sans`}>
+      <body className={`${jakarta.variable} ${outfit.variable} ${jetbrains.variable} font-sans`}>
         <ThemeProvider>
           {/* Global Ambient Lights */}
           <div className="fixed top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-brand-500/5 rounded-full blur-[120px] pointer-events-none mix-blend-screen z-[-1]"></div>
