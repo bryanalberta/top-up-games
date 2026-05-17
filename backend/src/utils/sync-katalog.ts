@@ -16,28 +16,27 @@ export async function syncDigiflazzHarga() {
     // yang mencerminkan struktur API Digiflazz asli (Offline Mode).
     const bodyData = {
        data: [
-         { product_name: "5 Diamonds", category: "Games", brand: "MOBILE LEGENDS", price: 1400, buyer_sku_code: "ML5", buyer_product_status: true, seller_product_status: true },
+         { product_name: "3 Diamonds", category: "Games", brand: "MOBILE LEGENDS", price: 1100, buyer_sku_code: "ML3", buyer_product_status: true, seller_product_status: true },
          { product_name: "12 Diamonds", category: "Games", brand: "MOBILE LEGENDS", price: 3300, buyer_sku_code: "ML12", buyer_product_status: true, seller_product_status: true },
-         { product_name: "50 Diamonds", category: "Games", brand: "MOBILE LEGENDS", price: 14000, buyer_sku_code: "ML50", buyer_product_status: true, seller_product_status: true },
-         { product_name: "284 Diamonds", category: "Games", brand: "MOBILE LEGENDS", price: 75000, buyer_sku_code: "ML284", buyer_product_status: true, seller_product_status: true },
+         { product_name: "86 Diamonds", category: "Games", brand: "MOBILE LEGENDS", price: 19500, buyer_sku_code: "ML86", buyer_product_status: true, seller_product_status: true },
+         { product_name: "172 Diamonds", category: "Games", brand: "MOBILE LEGENDS", price: 38000, buyer_sku_code: "ML172", buyer_product_status: true, seller_product_status: true },
+         { product_name: "257 Diamonds", category: "Games", brand: "MOBILE LEGENDS", price: 58000, buyer_sku_code: "ML257", buyer_product_status: true, seller_product_status: true },
+         { product_name: "706 Diamonds", category: "Games", brand: "MOBILE LEGENDS", price: 155000, buyer_sku_code: "ML706", buyer_product_status: true, seller_product_status: true },
          { product_name: "5 Diamonds", category: "Games", brand: "FREE FIRE", price: 900, buyer_sku_code: "FF5", buyer_product_status: true, seller_product_status: true },
-         { product_name: "70 Diamonds", category: "Games", brand: "FREE FIRE", price: 9500, buyer_sku_code: "FF70", buyer_product_status: true, seller_product_status: true },
-         { product_name: "140 Diamonds", category: "Games", brand: "FREE FIRE", price: 19000, buyer_sku_code: "FF140", buyer_product_status: true, seller_product_status: true },
-         { product_name: "125 VP", category: "Games", brand: "VALORANT", price: 14000, buyer_sku_code: "VALO125", buyer_product_status: true, seller_product_status: true },
+         { product_name: "70 Diamonds", category: "Games", brand: "FREE FIRE", price: 9000, buyer_sku_code: "FF70", buyer_product_status: true, seller_product_status: true },
+         { product_name: "140 Diamonds", category: "Games", brand: "FREE FIRE", price: 18000, buyer_sku_code: "FF140", buyer_product_status: true, seller_product_status: true },
+         { product_name: "355 Diamonds", category: "Games", brand: "FREE FIRE", price: 45000, buyer_sku_code: "FF355", buyer_product_status: true, seller_product_status: true },
+         { product_name: "720 Diamonds", category: "Games", brand: "FREE FIRE", price: 90000, buyer_sku_code: "FF720", buyer_product_status: true, seller_product_status: true },
+         { product_name: "125 VP", category: "Games", brand: "VALORANT", price: 13500, buyer_sku_code: "VALO125", buyer_product_status: true, seller_product_status: true },
          { product_name: "420 VP", category: "Games", brand: "VALORANT", price: 45000, buyer_sku_code: "VALO420", buyer_product_status: true, seller_product_status: true },
-         { product_name: "60 Genesis Crystals", category: "Games", brand: "GENSHIN IMPACT", price: 14000, buyer_sku_code: "GI60", buyer_product_status: true, seller_product_status: true },
+         { product_name: "700 VP", category: "Games", brand: "VALORANT", price: 73000, buyer_sku_code: "VALO700", buyer_product_status: true, seller_product_status: true },
+         { product_name: "1375 VP", category: "Games", brand: "VALORANT", price: 135000, buyer_sku_code: "VALO1375", buyer_product_status: true, seller_product_status: true },
+         { product_name: "60 Genesis Crystals", category: "Games", brand: "GENSHIN IMPACT", price: 13500, buyer_sku_code: "GI60", buyer_product_status: true, seller_product_status: true },
          { product_name: "300 Genesis Crystals", category: "Games", brand: "GENSHIN IMPACT", price: 65000, buyer_sku_code: "GI300", buyer_product_status: true, seller_product_status: true },
-         { product_name: "60 UC", category: "Games", brand: "PUBG MOBILE", price: 14000, buyer_sku_code: "PUBG60", buyer_product_status: true, seller_product_status: true },
+         { product_name: "60 UC", category: "Games", brand: "PUBG MOBILE", price: 13500, buyer_sku_code: "PUBG60", buyer_product_status: true, seller_product_status: true },
          { product_name: "325 UC", category: "Games", brand: "PUBG MOBILE", price: 65000, buyer_sku_code: "PUBG325", buyer_product_status: true, seller_product_status: true },
          { product_name: "31 CP", category: "Games", brand: "CALL OF DUTY MOBILE", price: 4500, buyer_sku_code: "CODM31", buyer_product_status: true, seller_product_status: true },
-         { product_name: "62 CP", category: "Games", brand: "CALL OF DUTY MOBILE", price: 9000, buyer_sku_code: "CODM62", buyer_product_status: true, seller_product_status: true },
-         { product_name: "Tokens 80", category: "Games", brand: "HONOR OF KINGS", price: 13000, buyer_sku_code: "HOK80", buyer_product_status: true, seller_product_status: true },
-         { product_name: "Tokens 240", category: "Games", brand: "HONOR OF KINGS", price: 38000, buyer_sku_code: "HOK240", buyer_product_status: true, seller_product_status: true },
-         { product_name: "80 Robux", category: "Games", brand: "ROBLOX", price: 16000, buyer_sku_code: "RBX80", buyer_product_status: true, seller_product_status: true },
-         { product_name: "400 Robux", category: "Games", brand: "ROBLOX", price: 78000, buyer_sku_code: "RBX400", buyer_product_status: true, seller_product_status: true },
-         { product_name: "40 Vouchers", category: "Games", brand: "ARENA OF VALOR", price: 10000, buyer_sku_code: "AOV40", buyer_product_status: true, seller_product_status: true },
-         { product_name: "100 FC Points", category: "Games", brand: "EA SPORTS FC MOBILE", price: 15000, buyer_sku_code: "EA100", buyer_product_status: true, seller_product_status: true },
-         { product_name: "1200 PB Cash", category: "Games", brand: "POINT BLANK", price: 10000, buyer_sku_code: "PB1200", buyer_product_status: true, seller_product_status: true }
+         { product_name: "62 CP", category: "Games", brand: "CALL OF DUTY MOBILE", price: 9000, buyer_sku_code: "CODM62", buyer_product_status: true, seller_product_status: true }
        ]
     };
     // --- MOCK DIGIFLAZZ DATA END ---
