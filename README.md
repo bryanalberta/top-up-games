@@ -50,7 +50,7 @@ Proyek ini dibangun menggunakan arsitektur Modern Full-Stack (Frontend & Backend
 
 | Halaman Utama | Halaman Transaksi Game | Halaman Admin Dashboard |
 | :---: | :---: | :---: |
-| ![Home](./frontend/public/screenshot-home.png) *(Contoh)* | ![Transaksi](./frontend/public/screenshot-transaksi.png) *(Contoh)* | ![Admin](./frontend/public/screenshot-admin.png) *(Contoh)* |
+| ![Home] *(Contoh)* | ![Transaksi](./frontend/public/screenshot-transaksi.png) *(Contoh)* | ![Admin](./frontend/public/screenshot-admin.png) *(Contoh)* |
 
 ## 📂 Struktur Folder Proyek
 
