@@ -4,7 +4,6 @@
 
 Sultan Top Up adalah platform layanan transaksi instan untuk top up berbagai macam game populer. Didesain dengan antarmuka yang sangat modern (Cyberpunk & Premium Esports Theme) serta dilengkapi dengan fitur keamanan dan kecepatan transaksi kilat.
 
-> **🌍 Live Demo:** *(Opsional: Masukkan link Vercel/Hosting Anda di sini jika ada)*
 
 ## 👥 Anggota Kelompok
 
