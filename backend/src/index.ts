@@ -159,7 +159,11 @@ app.post("/api/transactions", async (req, res) => {
     const product = await prisma.product.findUnique({ where: { id: productId } });
     if (!product) return res.status(404).json({ error: "Product not found" });
 
-    // 1. Simpan transaksi ke database kita dulu (PENDING)
+    // 1. Periksa metode pembayaran
+    const isSandbox = paymentMethod === "Sandbox Gateway (Simulasi)" || paymentMethod === "Sandbox Gateway";
+    const isManual = paymentMethod.toLowerCase().includes("manual");
+
+    // 2. Simpan transaksi ke database (PENDING)
     const transaction = await prisma.transaction.create({
       // @ts-ignore
       data: {
@@ -173,39 +177,85 @@ app.post("/api/transactions", async (req, res) => {
       }
     });
 
-    // 2. Buat parameter untuk Midtrans Snap
-    const parameter = {
-      transaction_details: {
-        order_id: transaction.id,
-        gross_amount: product.price
-      },
-      customer_details: {
-        first_name: gameUserId,
-        last_name: gameZoneId ? `(${gameZoneId})` : ""
-      },
-      item_details: [{
-        id: product.id,
-        price: product.price,
-        quantity: 1,
-        name: product.name
-      }]
-    };
+    if (isSandbox) {
+      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+      const paymentUrl = `${frontendUrl}/sandbox/pay/${transaction.id}`;
+      
+      const updatedTrx = await prisma.transaction.update({
+        where: { id: transaction.id },
+        data: { paymentCode: "TRX-SANDBOX" }
+      });
 
-    // 3. Minta Token Snap & Redirect URL ke Midtrans
-    const snapResponse = await snap.createTransaction(parameter);
+      return res.status(201).json({
+        ...updatedTrx,
+        snap_token: "MOCK_SNAP_TOKEN",
+        payment_url: paymentUrl
+      });
+    }
 
-    // 4. Update transaksi kita dengan URL/Token jika perlu (Opsional)
-    await prisma.transaction.update({
-      where: { id: transaction.id },
-      data: { paymentCode: snapResponse.redirect_url }
-    });
+    if (isManual) {
+      // Kode transfer manual unik dengan format TRX-MAN-RANDOM
+      const uniqueCode = "TRX-MAN-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+      
+      const updatedTrx = await prisma.transaction.update({
+        where: { id: transaction.id },
+        data: { paymentCode: uniqueCode }
+      });
 
-    // Kembalikan data transaksi + token midtrans ke Frontend
-    res.status(201).json({
-      ...transaction,
-      snap_token: snapResponse.token,
-      payment_url: snapResponse.redirect_url
-    });
+      return res.status(201).json({
+        ...updatedTrx,
+        snap_token: null,
+        payment_url: null
+      });
+    }
+
+    // Alur Default Midtrans (Fallback)
+    try {
+      const parameter = {
+        transaction_details: {
+          order_id: transaction.id,
+          gross_amount: product.price
+        },
+        customer_details: {
+          first_name: gameUserId,
+          last_name: gameZoneId ? `(${gameZoneId})` : ""
+        },
+        item_details: [{
+          id: product.id,
+          price: product.price,
+          quantity: 1,
+          name: product.name
+        }]
+      };
+
+      const snapResponse = await snap.createTransaction(parameter);
+
+      const updatedTrx = await prisma.transaction.update({
+        where: { id: transaction.id },
+        data: { paymentCode: snapResponse.redirect_url }
+      });
+
+      return res.status(201).json({
+        ...updatedTrx,
+        snap_token: snapResponse.token,
+        payment_url: snapResponse.redirect_url
+      });
+    } catch (midtransErr: any) {
+      console.warn("Midtrans failed, falling back to Sandbox Simulator:", midtransErr.message);
+      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+      const paymentUrl = `${frontendUrl}/sandbox/pay/${transaction.id}`;
+      
+      const updatedTrx = await prisma.transaction.update({
+        where: { id: transaction.id },
+        data: { paymentCode: "TRX-SANDBOX-FALLBACK" }
+      });
+
+      return res.status(201).json({
+        ...updatedTrx,
+        snap_token: "MOCK_SNAP_TOKEN",
+        payment_url: paymentUrl
+      });
+    }
   } catch (error: any) {
     console.error("Transaction Error:", error.message);
     res.status(500).json({ error: "Failed to create transaction", details: error.message });
@@ -298,16 +348,87 @@ app.get("/api/transactions/:id", async (req, res) => {
   }
 });
 
-// POST simulate payment (Admin / Demo only)
-app.post("/api/transactions/:id/pay", verifyToken, async (req, res) => {
+// Helper function to complete transaction and trigger Digiflazz/log top-up
+async function completeTransaction(transactionId: string) {
+  const trans = await prisma.transaction.update({
+    where: { id: transactionId },
+    data: { status: "SUCCESS" },
+    include: { product: true }
+  });
+  console.log(`[SYSTEM] Transaction ${transactionId} marked as SUCCESS.`);
+  
+  if (trans.product.supplierSku) {
+    console.log(`[SYSTEM] Triggering Digiflazz for SKU: ${trans.product.supplierSku}`);
+    try {
+      const customerTarget = trans.gameUserId + (trans.gameZoneId || "");
+      await processDigiflazzTopUp(trans.id, trans.product.supplierSku, customerTarget);
+    } catch (e) {
+      console.error("[SYSTEM] Digiflazz Trigger Failed!", e);
+    }
+  } else {
+    console.log(`[SYSTEM] Transaction ${transactionId} has no supplierSku. Manual / Simulation Processing completed.`);
+  }
+  return trans;
+}
+
+// POST simulate payment (Admin / Demo / Customer - No Token Required for Simulation)
+app.post("/api/transactions/:id/pay", async (req, res) => {
+  try {
+    const transaction = await completeTransaction(req.params.id);
+    res.json(transaction);
+  } catch (error) {
+    console.error("Failed to update payment status:", error);
+    res.status(500).json({ error: "Failed to update payment status" });
+  }
+});
+
+// POST sandbox payment success
+app.post("/api/sandbox/pay/:id/success", async (req, res) => {
+  try {
+    const transaction = await completeTransaction(req.params.id);
+    res.json({ status: "SUCCESS", transaction });
+  } catch (error) {
+    console.error("Sandbox pay success failed:", error);
+    res.status(500).json({ error: "Failed to process sandbox payment" });
+  }
+});
+
+// POST sandbox payment failed
+app.post("/api/sandbox/pay/:id/failed", async (req, res) => {
   try {
     const transaction = await prisma.transaction.update({
       where: { id: req.params.id },
-      data: { status: "SUCCESS" }
+      data: { status: "FAILED" }
     });
-    res.json(transaction);
+    res.json({ status: "FAILED", transaction });
   } catch (error) {
-    res.status(500).json({ error: "Failed to update payment status" });
+    console.error("Sandbox pay failed failed:", error);
+    res.status(500).json({ error: "Failed to cancel sandbox payment" });
+  }
+});
+
+// POST admin approve manual transaction (Requires Admin Token)
+app.post("/api/admin/transactions/:id/approve", verifyToken, async (req, res) => {
+  try {
+    const transaction = await completeTransaction(req.params.id);
+    res.json({ message: "Transaction approved successfully", transaction });
+  } catch (error) {
+    console.error("Failed to approve transaction:", error);
+    res.status(500).json({ error: "Failed to approve transaction" });
+  }
+});
+
+// POST admin reject manual transaction (Requires Admin Token)
+app.post("/api/admin/transactions/:id/reject", verifyToken, async (req, res) => {
+  try {
+    const transaction = await prisma.transaction.update({
+      where: { id: req.params.id },
+      data: { status: "FAILED" }
+    });
+    res.json({ message: "Transaction rejected successfully", transaction });
+  } catch (error) {
+    console.error("Failed to reject transaction:", error);
+    res.status(500).json({ error: "Failed to reject transaction" });
   }
 });
 
