@@ -49,11 +49,12 @@ export default function GameDetail({ params }: { params: { id: string } }) {
 
       if (res.ok) {
         const result = await res.json();
-        toast.success("Menghubungkan ke Gateway Pembayaran...");
         if (result.payment_url) {
+          toast.success("Menghubungkan ke Gateway Pembayaran...");
           window.location.href = result.payment_url;
         } else {
-          router.push(`/lacak`);
+          toast.success("Pesanan Manual Terdaftar!");
+          router.push(`/success?trx_id=${result.id}`);
         }
       } else {
         toast.error("Gagal memproses transaksi.");
@@ -197,7 +198,7 @@ export default function GameDetail({ params }: { params: { id: string } }) {
               </div>
               <h2 className="text-xl font-bold mb-6 text-theme-text border-b border-dark-border pb-4 pl-4">Pilih Pembayaran</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {['Qris', 'Gopay', 'Dana', 'Ovo', 'ShopeePay', 'BCA Virtual Account'].map((method, idx) => (
+                {['Sandbox Gateway (Simulasi)', 'BCA Transfer (Manual)', 'DANA E-Wallet (Manual)', 'GoPay E-Wallet (Manual)'].map((method, idx) => (
                   <motion.div 
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.98 }}
