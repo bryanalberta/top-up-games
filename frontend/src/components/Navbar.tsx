@@ -31,9 +31,9 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           {/* Ultra Elegant Esports Logo */}
           <Link href="/" className="flex items-center group">
-            <div className="relative flex items-center justify-center w-12 h-12 bg-white/[0.03] rounded-2xl border border-white/10 shadow-[0_0_20px_rgba(0,242,254,0.15)] transform group-hover:-rotate-6 group-hover:scale-110 transition-all duration-500 overflow-hidden">
+            <div className="relative flex items-center justify-center w-12 h-12 bg-white/[0.03] rounded-2xl border border-white/10 shadow-[0_0_20px_rgba(197,168,128,0.12)] transform group-hover:-rotate-6 group-hover:scale-110 transition-all duration-500 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-brand-500/20 to-accent-purple/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <span className="relative z-10 text-[28px] font-black italic text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-300 drop-shadow-[0_2px_10px_rgba(0,242,254,0.3)]">S</span>
+              <span className="relative z-10 text-[28px] font-black italic text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-300 drop-shadow-[0_2px_10px_rgba(197,168,128,0.25)]">S</span>
             </div>
             <div className="flex flex-col justify-center ml-4 pl-4 py-1 border-l border-white/10 group-hover:border-brand-500/30 transition-colors duration-500">
               <span className="text-[20px] font-black italic tracking-[0.15em] text-white uppercase leading-none group-hover:text-neon transition-all duration-500">
@@ -67,8 +67,9 @@ export default function Navbar() {
 
           {/* Desktop Call to Action */}
           <div className="hidden md:flex">
-            <Link href="/admin/login" className="flex items-center gap-2 text-xs font-bold text-white bg-white/5 hover:bg-white/10 px-6 py-3 rounded-full border border-white/10 hover:border-brand-500/50 hover:shadow-[0_0_20px_rgba(0,242,254,0.3)] transition-all duration-500 tracking-wider uppercase">
-              <ShieldCheck size={16} className="text-brand-500" />
+            <Link href="/admin/login" className="relative group/btn overflow-hidden flex items-center gap-2.5 text-[11px] font-black text-white bg-gradient-to-r from-brand-500/10 to-accent-purple/10 hover:from-brand-500/20 hover:to-accent-purple/20 px-6 py-3.5 rounded-full border border-brand-500/30 hover:border-brand-500/60 shadow-[0_0_15px_rgba(197,168,128,0.1)] hover:shadow-[0_0_25px_rgba(197,168,128,0.25)] transition-all duration-500 tracking-widest uppercase font-display">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse shadow-[0_0_8px_#c5a880]"></span>
+              <ShieldCheck size={14} className="text-brand-500 group-hover/btn:rotate-12 transition-transform duration-300" />
               Pusat Komando
             </Link>
           </div>
@@ -92,9 +93,9 @@ export default function Navbar() {
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className={`md:hidden absolute left-4 right-4 glass-premium p-6 flex flex-col gap-4 z-40 ${scrolled ? 'top-[5rem]' : 'top-24'}`}
           >
-            <Link href="/" className="text-theme-muted hover:text-white font-bold py-3 border-b border-white/5 flex items-center gap-4 text-sm uppercase tracking-wider" onClick={toggleMenu}><div className="w-1.5 h-1.5 rounded-full bg-brand-500 shadow-[0_0_10px_#00f2fe]"></div> Beranda</Link>
-            <Link href="/#games" className="text-theme-muted hover:text-white font-bold py-3 border-b border-white/5 flex items-center gap-4 text-sm uppercase tracking-wider" onClick={toggleMenu}><div className="w-1.5 h-1.5 rounded-full bg-accent-purple shadow-[0_0_10px_#ff007f]"></div> Daftar Game</Link>
-            <Link href="/cara-kerja" className="text-theme-muted hover:text-white font-bold py-3 border-b border-white/5 flex items-center gap-4 text-sm uppercase tracking-wider" onClick={toggleMenu}><div className="w-1.5 h-1.5 rounded-full bg-brand-500 shadow-[0_0_10px_#00f2fe]"></div> Cara Kerja</Link>
+            <Link href="/" className="text-theme-muted hover:text-white font-bold py-3 border-b border-white/5 flex items-center gap-4 text-sm uppercase tracking-wider" onClick={toggleMenu}><div className="w-1.5 h-1.5 rounded-full bg-brand-500 shadow-[0_0_10px_#c5a880]"></div> Beranda</Link>
+            <Link href="/#games" className="text-theme-muted hover:text-white font-bold py-3 border-b border-white/5 flex items-center gap-4 text-sm uppercase tracking-wider" onClick={toggleMenu}><div className="w-1.5 h-1.5 rounded-full bg-accent-purple shadow-[0_0_10px_#a855f7]"></div> Daftar Game</Link>
+            <Link href="/cara-kerja" className="text-theme-muted hover:text-white font-bold py-3 border-b border-white/5 flex items-center gap-4 text-sm uppercase tracking-wider" onClick={toggleMenu}><div className="w-1.5 h-1.5 rounded-full bg-brand-500 shadow-[0_0_10px_#c5a880]"></div> Cara Kerja</Link>
             <Link href="/lacak" className="text-theme-muted hover:text-white font-bold py-3 flex items-center gap-4 text-sm uppercase tracking-wider" onClick={toggleMenu}><div className="w-1.5 h-1.5 rounded-full bg-accent-gold shadow-[0_0_10px_#fbbf24]"></div> Lacak Pesanan</Link>
             <Link href="/admin/login" className="mt-4 btn-primary text-center" onClick={toggleMenu}>Pusat Komando</Link>
           </motion.div>

@@ -74,6 +74,23 @@ export default function SuccessPage() {
   );
 
   const isPending = trx.status === "PENDING";
+  const isManual = trx.paymentMethod?.toLowerCase().includes("manual");
+
+  const getManualDetails = () => {
+    const method = trx.paymentMethod?.toLowerCase() || "";
+    if (method.includes("bca")) {
+      return { type: "Bank BCA", account: "8830198271", name: "Kelompok Sultan Top Up" };
+    } else if (method.includes("dana")) {
+      return { type: "DANA E-Wallet", account: "0812-3456-7890", name: "Sultan Top Up" };
+    } else if (method.includes("gopay")) {
+      return { type: "GoPay E-Wallet", account: "0812-3456-7890", name: "Sultan Top Up" };
+    }
+    return { type: "Manual Transfer", account: "0812-3456-7890", name: "Sultan Top Up" };
+  };
+
+  const manualDetails = getManualDetails();
+  const whatsappText = `Halo Admin, saya ingin konfirmasi transfer manual untuk Top Up ${trx.product?.name} di ${trx.game?.name}.\n\nInvoice ID: ${trx.id}\nMetode: ${trx.paymentMethod}\nJumlah Transfer: Rp ${trx.amount.toLocaleString('id-ID')}\nKode Unik: ${trx.paymentCode || '-'}\nMohon segera diproses ya!`;
+  const whatsappUrl = `https://wa.me/6281234567890?text=${encodeURIComponent(whatsappText)}`;
 
   return (
     <div className="min-h-screen pt-24 pb-20 flex items-center justify-center px-6 bg-dark-bg relative overflow-hidden">
@@ -120,12 +137,12 @@ export default function SuccessPage() {
                 {isPending ? 'Otorisasi Pending' : 'Otorisasi Sukses'}
               </div>
               <h1 className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tight">
-                {isPending ? 'Menunggu Transfer' : 'Misi Berhasil!'}
+                {isPending ? (isManual ? 'Instruksi Transfer' : 'Menunggu Transfer') : 'Misi Berhasil!'}
               </h1>
               
               <p className="text-theme-muted mb-8 text-sm md:text-base max-w-sm mx-auto font-medium">
                 {isPending 
-                  ? 'Kunci koordinat pembayaran tercetak. Segera selesaikan transfer untuk memulai suplai drop.' 
+                  ? (isManual ? 'Silahkan transfer ke rekening di bawah ini untuk menyelesaikan transaksi manual Anda.' : 'Kunci koordinat pembayaran tercetak. Segera selesaikan transfer untuk memulai suplai drop.')
                   : 'Suplai drop telah dikirim. Saldo game Anda akan masuk dalam hitungan detik.'}
               </p>
             </motion.div>
@@ -144,27 +161,98 @@ export default function SuccessPage() {
                     <span className="font-black text-theme-text uppercase text-accent-neonBlue tracking-wider bg-accent-neonBlue/10 px-3 py-1 rounded-md border border-accent-neonBlue/20">{trx.paymentMethod}</span>
                   </div>
                   
-                  <div className="bg-dark-bg border border-dark-border rounded-xl p-4 mt-4 relative overflow-hidden group/code">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-brand-500"></div>
-                    <div className="text-xs text-brand-400 font-bold uppercase tracking-widest mb-2 pl-2 flex items-center gap-2">
-                       <LockKeyhole size={14} /> Kunci Enkripsi (VA/Kode)
-                    </div>
-                    <div className="flex items-center gap-3 pl-2">
-                      <div className="font-mono text-2xl md:text-3xl text-white font-black tracking-[0.2em] drop-shadow-[0_0_8px_rgba(255,255,255,0.4)] truncate">{trx.paymentCode || '-'}</div>
-                      <button 
-                        onClick={() => copyToClipboard(trx.paymentCode || '')}
-                        className="ml-auto p-3 hover:bg-brand-500/20 border border-transparent hover:border-brand-500/30 rounded-xl text-theme-muted hover:text-brand-400 transition-all flex-shrink-0"
-                        title="Salin Kode"
+                  {isManual ? (
+                    <div className="space-y-4 mt-4">
+                      <div className="bg-dark-bg border border-dark-border rounded-xl p-4 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-brand-500"></div>
+                        <div className="text-xs text-brand-400 font-bold uppercase tracking-widest mb-1 pl-2">
+                          Transfer Target ({manualDetails.type})
+                        </div>
+                        <div className="flex items-center justify-between pl-2">
+                          <div className="font-mono text-xl text-white font-black tracking-wider">{manualDetails.account}</div>
+                          <button 
+                            onClick={() => copyToClipboard(manualDetails.account)}
+                            className="p-2 hover:bg-brand-500/20 border border-transparent rounded-lg text-theme-muted hover:text-brand-400 transition-all"
+                            title="Salin No. Rekening"
+                          >
+                            {copied ? <Check size={18} className="text-green-400" /> : <Copy size={18} />}
+                          </button>
+                        </div>
+                        <div className="text-xs text-theme-muted mt-1 pl-2">
+                          a/n: <strong>{manualDetails.name}</strong>
+                        </div>
+                      </div>
+
+                      <div className="bg-dark-bg border border-dark-border rounded-xl p-4 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-accent-purple"></div>
+                        <div className="text-xs text-accent-purple font-bold uppercase tracking-widest mb-1 pl-2">
+                          Nominal Transfer (Transfer Sesuai Jumlah Ini)
+                        </div>
+                        <div className="flex items-center justify-between pl-2">
+                          <div className="font-mono text-2xl text-neon font-black">
+                            {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(trx.amount)}
+                          </div>
+                          <button 
+                            onClick={() => copyToClipboard(trx.amount.toString())}
+                            className="p-2 hover:bg-brand-500/20 border border-transparent rounded-lg text-theme-muted hover:text-brand-400 transition-all"
+                            title="Salin Nominal"
+                          >
+                            {copied ? <Check size={18} className="text-green-400" /> : <Copy size={18} />}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="bg-dark-bg border border-dark-border rounded-xl p-4 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-brand-400"></div>
+                        <div className="text-xs text-brand-300 font-bold uppercase tracking-widest mb-1 pl-2">
+                          Kode Unik Referensi (Berikan pada Keterangan Transfer)
+                        </div>
+                        <div className="flex items-center justify-between pl-2">
+                          <div className="font-mono text-lg text-white font-bold tracking-wider">{trx.paymentCode || '-'}</div>
+                          <button 
+                            onClick={() => copyToClipboard(trx.paymentCode || '')}
+                            className="p-2 hover:bg-brand-500/20 border border-transparent rounded-lg text-theme-muted hover:text-brand-400 transition-all"
+                            title="Salin Referensi"
+                          >
+                            {copied ? <Check size={18} className="text-green-400" /> : <Copy size={18} />}
+                          </button>
+                        </div>
+                      </div>
+
+                      <a 
+                        href={whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-4 rounded-xl text-center transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-green-500/30 text-sm mt-4 cursor-pointer"
                       >
-                        {copied ? <Check size={22} className="text-green-400" /> : <Copy size={22} />}
-                      </button>
+                        📱 Konfirmasi Pembayaran via WhatsApp
+                      </a>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="bg-dark-bg border border-dark-border rounded-xl p-4 mt-4 relative overflow-hidden group/code">
+                      <div className="absolute top-0 left-0 w-1 h-full bg-brand-500"></div>
+                      <div className="text-xs text-brand-400 font-bold uppercase tracking-widest mb-2 pl-2 flex items-center gap-2">
+                         <LockKeyhole size={14} /> Kunci Enkripsi (VA/Kode)
+                      </div>
+                      <div className="flex items-center gap-3 pl-2">
+                        <div className="font-mono text-2xl md:text-3xl text-white font-black tracking-[0.2em] drop-shadow-[0_0_8px_rgba(255,255,255,0.4)] truncate">{trx.paymentCode || '-'}</div>
+                        <button 
+                          onClick={() => copyToClipboard(trx.paymentCode || '')}
+                          className="ml-auto p-3 hover:bg-brand-500/20 border border-transparent hover:border-brand-500/30 rounded-xl text-theme-muted hover:text-brand-400 transition-all flex-shrink-0"
+                          title="Salin Kode"
+                        >
+                          {copied ? <Check size={22} className="text-green-400" /> : <Copy size={22} />}
+                        </button>
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="mt-4 bg-orange-900/20 border border-orange-500/30 rounded-xl p-4 flex items-start gap-3 shadow-[0_0_15px_rgba(249,115,22,0.1)]">
                     <AlertCircle className="text-orange-400 shrink-0 mt-0.5" size={18} />
                     <p className="text-xs text-orange-200/90 leading-relaxed font-medium">
-                      PERHATIAN: Transfer nilai pasti. Protokol pengiriman akan otomatis batal jika tidak ada respons dalam 24 jam.
+                      {isManual 
+                        ? 'PERHATIAN: Mohon transfer sesuai nominal persis. Pembayaran manual akan diverifikasi oleh admin maksimal 1x24 jam.'
+                        : 'PERHATIAN: Transfer nilai pasti. Protokol pengiriman akan otomatis batal jika tidak ada respons dalam 24 jam.'}
                     </p>
                   </div>
                 </div>

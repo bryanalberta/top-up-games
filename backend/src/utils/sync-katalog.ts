@@ -135,6 +135,9 @@ export async function syncDigiflazzHarga() {
            if (brandName.toLowerCase().includes("arena of valor")) fallbackImage = "/images/aov.png";
            if (brandName.toLowerCase().includes("sports fc")) fallbackImage = "/images/ea sports.png";
            if (brandName.toLowerCase().includes("point blank")) fallbackImage = "/images/pb.png";
+           if (brandName.toLowerCase().includes("clash of clans")) fallbackImage = "/images/clashofclan.png";
+           if (brandName.toLowerCase().includes("steam")) fallbackImage = "/images/How-to-Use-Steam-Wallet.jpg";
+           if (brandName.toLowerCase().includes("minecraft")) fallbackImage = "/images/minecraft.webp";
 
            const existGame = await prisma.game.findFirst({ where: { name: brandName }});
            if (!existGame) {

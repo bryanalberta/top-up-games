@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 export default function LacakPesananPage() {
   const [trxId, setTrxId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState('');
 
@@ -16,8 +17,12 @@ export default function LacakPesananPage() {
     if (!trxId) return;
 
     setIsLoading(true);
+    setIsScanning(true);
     setError('');
     setResult(null);
+
+    // Wait for 2.2s for radar scanning animation
+    await new Promise(resolve => setTimeout(resolve, 2200));
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
@@ -26,12 +31,13 @@ export default function LacakPesananPage() {
       if (!res.ok) {
         setError("Transaksi tidak ditemukan.");
         toast.error("Pesanan tidak ditemukan. Cek kembali Nomor Invoice.");
+        setIsScanning(false);
         setIsLoading(false);
         return;
       }
 
       const data = await res.json();
-      toast.success("Data Transaksi ditemukan obyek radar!");
+      toast.success("Radar mendeteksi data transaksi!");
       setResult({
         id: data.id,
         status: data.status,
@@ -47,6 +53,7 @@ export default function LacakPesananPage() {
       setError("Terjadi kesalahan sistem saat mencari transaksi.");
       toast.error("Kesalahan jaringan.");
     } finally {
+      setIsScanning(false);
       setIsLoading(false);
     }
   };
@@ -107,6 +114,30 @@ export default function LacakPesananPage() {
           </form>
 
           <AnimatePresence mode="wait">
+            {isScanning && (
+              <motion.div 
+                key="scanning"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="flex flex-col items-center justify-center py-12 gap-6 relative z-10"
+              >
+                <div className="radar-container relative">
+                  <div className="radar-sweep"></div>
+                  <div className="radar-grid"></div>
+                  <div className="radar-crosshair-h"></div>
+                  <div className="radar-crosshair-v"></div>
+                  <div className="radar-blip top-[40%] left-[30%]"></div>
+                  <div className="radar-blip top-[65%] left-[70%]"></div>
+                </div>
+                
+                <div className="text-center">
+                  <p className="text-brand-500 font-black tracking-[0.25em] animate-pulse text-sm font-mono">RADAR MEMINDAI SIGNAL...</p>
+                  <p className="text-xs text-theme-muted mt-2">Menghubungkan ke Invoice ID: {trxId.toUpperCase()}</p>
+                </div>
+              </motion.div>
+            )}
+
             {error && (
               <motion.div 
                 key="error"
@@ -126,7 +157,7 @@ export default function LacakPesananPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="mt-10 glass-card border-brand-500/50 p-6 md:p-8 relative overflow-hidden"
+                className="mt-10 glass-card border-brand-500/50 p-6 md:p-8 relative overflow-hidden receipt-tear"
               >
                 {/* Cyber Receipt Header Overlay */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-500 to-transparent"></div>
@@ -176,38 +207,118 @@ export default function LacakPesananPage() {
                 </div>
 
                 {/* Render payment instructions if pending */}
-                {result.status === "PENDING" && result.paymentCode && (
-                  <div className="mt-8 pt-6 border-t border-white/10 relative z-10">
-                    <div className="bg-accent-gold/5 backdrop-blur-xl border border-accent-gold/40 rounded-3xl p-6 md:p-8 text-center shadow-[inset_0_0_30px_rgba(251,191,36,0.05),0_10px_40px_rgba(251,191,36,0.1)] relative overflow-hidden group">
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-px bg-gradient-to-r from-transparent via-accent-gold to-transparent opacity-50"></div>
-                      <p className="text-xs uppercase tracking-widest font-black text-accent-gold mb-3 flex items-center justify-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-accent-gold animate-pulse"></span> Otorisasi Pembayaran
-                      </p>
-                      <p className="text-sm font-medium text-theme-muted mb-6">Gunakan kode ini untuk menyelesaikan transfer pada metode yang dipilih.</p>
-                      <div className="bg-dark-bg/80 inline-block px-10 py-5 rounded-2xl border border-white/10 mb-4 shadow-inner ring-1 ring-white/5 group-hover:border-accent-gold/40 transition-colors">
-                        <span className="text-3xl md:text-5xl font-mono font-black tracking-widest text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]">
-                          {result.paymentCode}
-                        </span>
-                      </div>
-                      
-                      {/* Tombol pelunasan khusus simulasi/demo admin */}
-                      <div>
-                        <button
-                          onClick={async () => {
-                            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-                            toast.success("Menjalankan Otorisasi...");
-                            await fetch(`${apiUrl}/api/transactions/${result.id}/pay`, { method: "POST" });
-                            toast.success("Pembayaran Berhasil Dilunasi!");
-                            handleSearch(new Event('submit') as any); // Refresh data
-                          }}
-                          className="mt-4 text-xs bg-dark-bg text-brand-400 px-4 py-2 rounded-lg border border-brand-500/30 hover:bg-brand-500 hover:text-white transition-colors font-bold tracking-wide uppercase"
-                        >
-                          [ADMIN] Jalankan Protokol Lunas
-                        </button>
-                      </div>
+                {result.status === "PENDING" && result.paymentCode && (() => {
+                  const isManual = result.paymentMethod?.toLowerCase().includes("manual");
+                  const getManualDetails = (paymentMethod: string) => {
+                    const method = paymentMethod?.toLowerCase() || "";
+                    if (method.includes("bca")) {
+                      return { type: "Bank BCA", account: "8830198271", name: "Kelompok Sultan Top Up" };
+                    } else if (method.includes("dana")) {
+                      return { type: "DANA E-Wallet", account: "0812-3456-7890", name: "Sultan Top Up" };
+                    } else if (method.includes("gopay")) {
+                      return { type: "GoPay E-Wallet", account: "0812-3456-7890", name: "Sultan Top Up" };
+                    }
+                    return { type: "Manual Transfer", account: "0812-3456-7890", name: "Sultan Top Up" };
+                  };
+                  const manualDetails = isManual ? getManualDetails(result.paymentMethod) : null;
+                  const whatsappText = `Halo Admin, saya ingin konfirmasi transfer manual untuk Top Up ${result.product} di ${result.game}.\n\nInvoice ID: ${result.id}\nMetode: ${result.paymentMethod}\nJumlah Transfer: ${result.price}\nKode Unik: ${result.paymentCode || '-'}\nMohon segera diproses ya!`;
+                  const whatsappUrl = `https://wa.me/6281234567890?text=${encodeURIComponent(whatsappText)}`;
+
+                  return (
+                    <div className="mt-8 pt-6 border-t border-white/10 relative z-10 text-left">
+                      {isManual ? (
+                        <div className="bg-dark-bg/60 border border-dark-border rounded-2xl p-6 space-y-4">
+                          <h4 className="text-xs uppercase tracking-widest font-black text-brand-400">Instruksi Transfer Manual</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-dark-bg border border-white/5 rounded-xl p-3">
+                              <span className="text-[10px] text-theme-muted uppercase font-bold tracking-wider block">Rekening Tujuan ({manualDetails?.type})</span>
+                              <span className="font-mono text-white text-lg font-black block">{manualDetails?.account}</span>
+                              <span className="text-xs text-theme-muted block">a/n {manualDetails?.name}</span>
+                            </div>
+                            <div className="bg-dark-bg border border-white/5 rounded-xl p-3">
+                              <span className="text-[10px] text-theme-muted uppercase font-bold tracking-wider block">Total Transfer</span>
+                              <span className="font-mono text-neon text-lg font-black block">{result.price}</span>
+                              <span className="text-xs text-theme-muted block">Gunakan transfer nilai pas</span>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-dark-bg border border-white/5 rounded-xl p-3">
+                            <span className="text-[10px] text-theme-muted uppercase font-bold tracking-wider block">Kode Referensi Transfer</span>
+                            <span className="font-mono text-white text-sm font-bold block">{result.paymentCode}</span>
+                          </div>
+
+                          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                            <a 
+                              href={whatsappUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-2.5 rounded-xl text-center transition-all flex items-center justify-center gap-1.5 text-xs uppercase tracking-wider"
+                            >
+                              📱 WhatsApp Konfirmasi
+                            </a>
+                            <button
+                              onClick={async () => {
+                                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+                                toast.success("Menjalankan Otorisasi...");
+                                await fetch(`${apiUrl}/api/transactions/${result.id}/pay`, { method: "POST" });
+                                toast.success("Pembayaran Berhasil Dilunasi!");
+                                handleSearch(new Event('submit') as any); // Refresh data
+                              }}
+                              className="flex-1 bg-dark-bg text-brand-400 border border-brand-500/30 hover:bg-brand-500 hover:text-white transition-all font-bold text-xs uppercase tracking-wider rounded-xl py-2.5"
+                            >
+                              ⚡ Lunas Instan (Simulasi)
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-accent-gold/5 backdrop-blur-xl border border-accent-gold/40 rounded-3xl p-6 md:p-8 text-center shadow-[inset_0_0_30px_rgba(251,191,36,0.05),0_10px_40px_rgba(251,191,36,0.1)] relative overflow-hidden group">
+                          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-px bg-gradient-to-r from-transparent via-accent-gold to-transparent opacity-50"></div>
+                          <p className="text-xs uppercase tracking-widest font-black text-accent-gold mb-3 flex items-center justify-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-accent-gold animate-pulse"></span> Otorisasi Pembayaran
+                          </p>
+                          <p className="text-sm font-medium text-theme-muted mb-6">Gunakan kode ini untuk menyelesaikan transfer pada metode yang dipilih.</p>
+                          <div className="bg-dark-bg/80 inline-block px-10 py-5 rounded-2xl border border-white/10 mb-4 shadow-inner ring-1 ring-white/5 group-hover:border-accent-gold/40 transition-colors">
+                            <span className="text-3xl md:text-5xl font-mono font-black tracking-widest text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]">
+                              {result.paymentCode}
+                            </span>
+                          </div>
+                          
+                          {/* Tombol pelunasan khusus simulasi/demo admin */}
+                          <div>
+                            <button
+                              onClick={async () => {
+                                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+                                toast.success("Menjalankan Otorisasi...");
+                                await fetch(`${apiUrl}/api/transactions/${result.id}/pay`, { method: "POST" });
+                                toast.success("Pembayaran Berhasil Dilunasi!");
+                                handleSearch(new Event('submit') as any); // Refresh data
+                              }}
+                              className="mt-4 text-xs bg-dark-bg text-brand-400 px-4 py-2 rounded-lg border border-brand-500/30 hover:bg-brand-500 hover:text-white transition-colors font-bold tracking-wide uppercase"
+                            >
+                              [SIMULASI] Jalankan Protokol Lunas
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
+                  );
+                })()}
+
+                {/* Barcode futuristic visual */}
+                <div className="flex flex-col items-center justify-center mt-10 pt-8 border-t border-white/5 relative z-10">
+                  <div className="text-[9px] text-theme-muted font-mono tracking-[0.25em] uppercase mb-3">Satelit Hash Invoice</div>
+                  <div className="bg-white/[0.02] p-4 rounded-2xl flex items-center justify-center gap-1.5 hover:bg-white/[0.04] transition-all w-max shadow-inner border border-white/5">
+                    {/* Styled barcode lines */}
+                    {[1, 2.5, 1.2, 3.2, 1.8, 4, 1.5, 2.5, 1, 3.5, 1.2, 4.2, 2.8, 1, 3, 2, 1.2, 4, 2.2, 1, 3.2, 1.5, 2].map((height, i) => (
+                      <div 
+                        key={i} 
+                        className="bg-white w-[2.5px] rounded-full opacity-60 hover:opacity-100 transition-opacity" 
+                        style={{ height: `${height * 8}px` }}
+                      ></div>
+                    ))}
                   </div>
-                )}
+                  <span className="text-[10px] text-brand-500 font-mono tracking-[0.35em] uppercase mt-3.5 select-all">{result.id}</span>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

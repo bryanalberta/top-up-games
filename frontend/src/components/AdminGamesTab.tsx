@@ -178,7 +178,7 @@ export default function AdminGamesTab() {
         <div className="glow-effect"></div>
         <div className="relative z-10">
           <h2 className="text-2xl font-black text-white drop-shadow-md flex items-center gap-3">
-            <span className="p-2 bg-accent-purple/20 text-accent-purple rounded-xl border border-accent-purple/40 shadow-[0_0_20px_rgba(139,92,246,0.3)]">
+            <span className="p-2 bg-brand-500/10 text-brand-400 rounded-xl border border-brand-500/30 shadow-[0_0_20px_rgba(197,168,128,0.25)]">
               <Layers className="animate-pulse" size={24} />
             </span>
             Katalog Game
@@ -187,7 +187,7 @@ export default function AdminGamesTab() {
         </div>
         <button 
           onClick={() => openGameModal()}
-          className="btn-primary flex items-center gap-2 rounded-xl px-5 py-3 shadow-[0_0_20px_rgba(139,92,246,0.3)] bg-gradient-to-r from-accent-purple to-brand-500 border-none hover:shadow-[0_0_30px_rgba(139,92,246,0.5)]"
+          className="bg-brand-500 hover:bg-brand-600 text-black font-black tracking-widest uppercase text-xs px-6 py-3.5 rounded-xl shadow-[0_4px_15px_rgba(197,168,128,0.25)] hover:shadow-[0_8px_25px_rgba(197,168,128,0.45)] transition-all duration-300 flex items-center gap-2"
         >
           <Plus size={18} /> Tambah Game
         </button>
@@ -219,7 +219,7 @@ export default function AdminGamesTab() {
               
               <div className="flex justify-between items-center text-sm border-t border-white/5 pt-4">
                 <div className="flex items-center gap-1.5 text-theme-muted font-medium">
-                  <Diamond size={14} className="text-accent-neonBlue" />
+                  <Diamond size={14} className="text-brand-400" />
                   {game.products?.length || 0} Produk
                 </div>
                 <button 
@@ -242,7 +242,7 @@ export default function AdminGamesTab() {
                 >
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-xs font-bold text-brand-300 uppercase tracking-widest">Daftar Nominal</span>
-                    <button onClick={() => openProductModal()} className="text-[10px] bg-brand-500 text-white px-2 py-1 rounded-md font-bold hover:bg-brand-400">+ Item</button>
+                    <button onClick={() => openProductModal()} className="text-[10px] bg-brand-500 hover:bg-brand-600 text-black px-2.5 py-1 rounded-lg font-black tracking-wide uppercase transition-colors">+ Item</button>
                   </div>
                   <div className="space-y-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
                     {game.products?.length === 0 && <div className="text-xs text-center text-theme-muted py-2 italic">Belum ada item jualan.</div>}
@@ -314,7 +314,7 @@ export default function AdminGamesTab() {
           <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsProductModalOpen(false)} className="absolute inset-0 bg-black/60 backdrop-blur-sm"></motion.div>
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative z-10 w-full max-w-md bg-dark-bg border border-white/10 rounded-[2rem] shadow-[0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden">
-              <div className="p-6 border-b border-white/5 bg-accent-neonBlue/10">
+              <div className="p-6 border-b border-white/5 bg-brand-500/10">
                 <h3 className="text-xl font-black text-white drop-shadow-md">{editingProduct ? 'Edit Nominal' : 'Tambah Nominal Baru'}</h3>
               </div>
               <form onSubmit={handleSaveProduct} className="p-6 space-y-5">
@@ -328,7 +328,7 @@ export default function AdminGamesTab() {
                 </div>
                 <div className="pt-6 flex gap-3">
                   <button type="button" onClick={() => setIsProductModalOpen(false)} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold transition-colors">Batal</button>
-                  <button type="submit" disabled={isSubmitting} className="flex-1 py-3 btn-primary bg-accent-neonBlue border-accent-neonBlue text-dark-bg hover:bg-blue-400 rounded-xl flex items-center justify-center gap-2">
+                  <button type="submit" disabled={isSubmitting} className="flex-1 py-3 bg-brand-500 hover:bg-brand-600 text-black rounded-xl font-bold transition-all shadow-[0_4px_15px_rgba(197,168,128,0.25)] hover:shadow-[0_8px_25px_rgba(197,168,128,0.45)] flex items-center justify-center gap-2">
                     {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <><CheckCircle2 size={18} /> Simpan Data</>}
                   </button>
                 </div>

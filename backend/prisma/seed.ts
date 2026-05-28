@@ -267,6 +267,91 @@ async function main() {
     }
   });
 
+  // Clash of Clans
+  await prisma.game.create({
+    data: {
+      name: "Clash of Clans",
+      publisher: "Supercell",
+      imageUrl: "/images/clashofclan.png",
+      description: "Top up Gems & Gold Pass Clash of Clans",
+      isPopular: true,
+      products: {
+        create: [
+          { name: "80 Gems", price: 15000 },
+          { name: "500 Gems", price: 75000 },
+          { name: "1200 Gems", price: 149000 },
+          { name: "2500 Gems", price: 299000 },
+          { name: "6500 Gems", price: 749000 },
+          { name: "14000 Gems", price: 1499000 },
+          { name: "Gold Pass", price: 99000 },
+        ]
+      }
+    }
+  });
+
+  // Steam Wallet Code
+  await prisma.game.create({
+    data: {
+      name: "Steam Wallet Code",
+      publisher: "Valve Corporation",
+      imageUrl: "/images/How-to-Use-Steam-Wallet.jpg",
+      description: "Beli Voucher Steam Wallet Code IDR",
+      isPopular: true,
+      products: {
+        create: [
+          { name: "Steam Wallet IDR 12.000", price: 15000 },
+          { name: "Steam Wallet IDR 45.000", price: 55000 },
+          { name: "Steam Wallet IDR 60.000", price: 72000 },
+          { name: "Steam Wallet IDR 90.000", price: 108000 },
+          { name: "Steam Wallet IDR 120.000", price: 144000 },
+          { name: "Steam Wallet IDR 250.000", price: 295000 },
+          { name: "Steam Wallet IDR 400.000", price: 470000 },
+          { name: "Steam Wallet IDR 600.000", price: 699000 },
+        ]
+      }
+    }
+  });
+
+  // Super Sus
+  await prisma.game.create({
+    data: {
+      name: "Super Sus",
+      publisher: "Pipa Studios",
+      imageUrl: "/images/supersus.png",
+      description: "Top up Gold Stars Super Sus",
+      isPopular: false,
+      products: {
+        create: [
+          { name: "100 Gold Stars", price: 16000 },
+          { name: "310 Gold Stars", price: 49000 },
+          { name: "520 Gold Stars", price: 79000 },
+          { name: "1060 Gold Stars", price: 159000 },
+          { name: "2180 Gold Stars", price: 329000 },
+          { name: "5600 Gold Stars", price: 799000 },
+        ]
+      }
+    }
+  });
+
+  // Minecraft
+  await prisma.game.create({
+    data: {
+      name: "Minecraft",
+      publisher: "Mojang Studios",
+      imageUrl: "/images/minecraft.webp",
+      description: "Top up Minecoins & Minecoins Pack",
+      isPopular: false,
+      products: {
+        create: [
+          { name: "320 Minecoins", price: 35000 },
+          { name: "700 Minecoins", price: 75000 },
+          { name: "1720 Minecoins", price: 175000 },
+          { name: "3500 Minecoins", price: 350000 },
+        ]
+      }
+    }
+  });
+
   console.log("Database seeded successfully!");
 }
 

@@ -60,6 +60,15 @@ const verifyToken = (req: any, res: any, next: any) => {
 };
 
 // --- AUTH ROUTES ---
+app.get("/api/admin/setup-status", async (req, res) => {
+  try {
+    const adminCount = await prisma.admin.count();
+    res.json({ isSetup: adminCount > 0 });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to check admin setup status" });
+  }
+});
+
 app.post("/api/admin/setup", authLimiter, async (req, res) => {
   try {
     const adminCount = await prisma.admin.count();

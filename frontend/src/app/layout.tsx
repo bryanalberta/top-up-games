@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar';
 import { ThemeProvider } from '../components/ThemeProvider';
 import { Toaster } from 'sonner';
 import './globals.css';
-import { Diamond, ShieldCheck, Zap } from 'lucide-react';
+import { Diamond, ShieldCheck, Zap, MessageCircle } from 'lucide-react';
 
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-jakarta' });
@@ -57,14 +57,14 @@ export default function RootLayout({
                 {/* Brand Column */}
                 <div className="col-span-1 md:col-span-5 flex flex-col gap-6">
                   <div className="flex items-center group cursor-pointer inline-flex w-max mb-6">
-                    <div className="relative flex items-center justify-center w-14 h-14 bg-brand-600/20 rounded-2xl border border-brand-500/50 shadow-[0_0_20px_rgba(168,85,247,0.5)] transform group-hover:-rotate-3 group-hover:scale-105 transition-all duration-300">
-                      <span className="relative z-10 text-[36px] font-black italic text-transparent bg-clip-text bg-gradient-to-br from-purple-200 to-pink-400 drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">S</span>
+                    <div className="relative flex items-center justify-center w-14 h-14 bg-brand-500/10 rounded-2xl border border-brand-500/30 shadow-[0_0_20px_rgba(197,168,128,0.2)] transform group-hover:-rotate-3 group-hover:scale-105 transition-all duration-300">
+                      <span className="relative z-10 text-[36px] font-black italic text-transparent bg-clip-text bg-gradient-to-br from-white via-amber-200 to-brand-400 drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">S</span>
                     </div>
                     <div className="flex flex-col justify-center ml-5 border-l-2 border-brand-500/30 pl-5 py-1">
-                      <h4 className="text-[28px] font-black italic tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 uppercase leading-none drop-shadow-[0_0_10px_rgba(168,85,247,0.4)]">
+                      <h4 className="text-[28px] font-black italic tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 uppercase leading-none drop-shadow-[0_0_10px_rgba(197,168,128,0.2)]">
                         SULTAN
                       </h4>
-                      <span className="text-[12px] font-bold tracking-[0.5em] text-pink-400 uppercase mt-2 opacity-90">
+                      <span className="text-[12px] font-bold tracking-[0.5em] text-brand-400 uppercase mt-2 opacity-90">
                         TOP UP
                       </span>
                     </div>
@@ -120,6 +120,25 @@ export default function RootLayout({
               </div>
             </div>
           </footer>
+
+          {/* Floating WhatsApp VIP Button */}
+          <a
+            href="https://wa.me/628123456789"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fixed bottom-6 right-6 z-[100] group/wa flex items-center gap-3 cursor-pointer outline-none"
+            aria-label="WhatsApp VIP Customer Care"
+          >
+            {/* Hover tooltip */}
+            <span className="bg-[#090714]/95 border border-white/10 text-white text-[10px] font-black tracking-widest uppercase px-4 py-2.5 rounded-xl opacity-0 translate-x-4 pointer-events-none group-hover/wa:opacity-100 group-hover/wa:translate-x-0 transition-all duration-300 shadow-[0_10px_30px_rgba(0,0,0,0.8)] backdrop-blur-md">
+              WhatsApp VIP 24/7
+            </span>
+
+            {/* Glowing Pulsing Button */}
+            <div className="w-16 h-16 rounded-[1.6rem] bg-gradient-to-br from-emerald-600 to-green-700 border border-brand-500/40 flex items-center justify-center text-white shadow-[0_10px_35px_rgba(0,0,0,0.8)] animate-double-pulse group-hover/wa:scale-110 group-hover/wa:-rotate-6 transition-all duration-500">
+              <MessageCircle className="w-8 h-8 group-hover/wa:scale-110 transition-transform duration-300" />
+            </div>
+          </a>
         </ThemeProvider>
       </body>
     </html>
