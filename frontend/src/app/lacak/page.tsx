@@ -5,38 +5,54 @@ import { Search, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
+// 1. Definisikan Interface untuk Type Safety TypeScript
+interface TransactionResult {
+  id: string;
+  status: 'SUCCESS' | 'PENDING' | 'FAILED' | string;
+  game: string;
+  product: string;
+  userId: string;
+  date: string;
+  price: string;
+  paymentMethod: string;
+  paymentCode?: string;
+}
+
 export default function LacakPesananPage() {
   const [trxId, setTrxId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<TransactionResult | null>(null);
   const [error, setError] = useState('');
+
+  // 2. Pisahkan logika Fetching agar bisa dipanggil ulang dengan bersih
+  const getTransactionData = async (targetId: string) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const res = await fetch(`${apiUrl}/api/transactions/${targetId}`);
+    
+    if (!res.ok) {
+      throw new Error("Transaksi tidak ditemukan.");
+    }
+    
+    return await res.json();
+  };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!trxId) return;
+    const cleanTrxId = trxId.trim(); // Bersihkan spasi
+    if (!cleanTrxId) return;
 
     setIsLoading(true);
     setIsScanning(true);
     setError('');
     setResult(null);
 
-    // Wait for 2.2s for radar scanning animation
+    // Efek radar scanning selama 2.2 detik
     await new Promise(resolve => setTimeout(resolve, 2200));
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${apiUrl}/api/transactions/${trxId}`);
+      const data = await getTransactionData(cleanTrxId);
       
-      if (!res.ok) {
-        setError("Transaksi tidak ditemukan.");
-        toast.error("Pesanan tidak ditemukan. Cek kembali Nomor Invoice.");
-        setIsScanning(false);
-        setIsLoading(false);
-        return;
-      }
-
-      const data = await res.json();
       toast.success("Radar mendeteksi data transaksi!");
       setResult({
         id: data.id,
@@ -49,12 +65,37 @@ export default function LacakPesananPage() {
         paymentMethod: data.paymentMethod,
         paymentCode: data.paymentCode
       });
-    } catch (err) {
-      setError("Terjadi kesalahan sistem saat mencari transaksi.");
-      toast.error("Kesalahan jaringan.");
+    } catch (err: any) {
+      setError(err.message === "Transaksi tidak ditemukan." ? "Transaksi tidak ditemukan." : "Terjadi kesalahan sistem.");
+      toast.error(err.message === "Transaksi tidak ditemukan." ? "Pesanan tidak ditemukan. Cek kembali Nomor Invoice." : "Kesalahan jaringan.");
     } finally {
       setIsScanning(false);
       setIsLoading(false);
+    }
+  };
+
+  // 3. Fungsi Simulasi Lunas tanpa memalsukan Event Submit
+  const handleSimulatePayment = async () => {
+    if (!result) return;
+    
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      toast.info("Menjalankan Otorisasi...");
+      
+      const res = await fetch(`${apiUrl}/api/transactions/${result.id}/pay`, { method: "POST" });
+      if (!res.ok) throw new Error();
+
+      toast.success("Pembayaran Berhasil Dilunasi!");
+      
+      // Refresh data secara langsung
+      const updatedData = await getTransactionData(result.id);
+      setResult(prev => prev ? {
+        ...prev,
+        status: updatedData.status
+      } : null);
+      
+    } catch (err) {
+      toast.error("Gagal menjalankan simulasi pembayaran.");
     }
   };
 
@@ -106,7 +147,7 @@ export default function LacakPesananPage() {
             </div>
             <button 
               type="submit" 
-              disabled={isLoading || !trxId}
+              disabled={isLoading || !trxId.trim()}
               className="btn-primary rounded-2xl flex items-center justify-center gap-2 px-8 py-4 md:py-5 min-w-[160px]"
             >
               {isLoading ? <Loader2 className="animate-spin" size={24} /> : 'Scan Kode'}
@@ -159,7 +200,6 @@ export default function LacakPesananPage() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="mt-10 glass-card border-brand-500/50 p-6 md:p-8 relative overflow-hidden receipt-tear"
               >
-                {/* Cyber Receipt Header Overlay */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-500 to-transparent"></div>
                 <div className="absolute top-0 right-0 w-40 h-40 bg-brand-500/20 blur-[60px] pointer-events-none"></div>
                 
@@ -197,7 +237,6 @@ export default function LacakPesananPage() {
                     <span className="text-accent-purple font-black uppercase tracking-widest drop-shadow-sm">{result.paymentMethod}</span>
                   </div>
                   
-                  {/* Total Separator */}
                   <div className="border-t-2 border-dashed border-white/20 my-6 shadow-sm"></div>
 
                   <div className="flex justify-between items-center px-1">
@@ -206,18 +245,14 @@ export default function LacakPesananPage() {
                   </div>
                 </div>
 
-                {/* Render payment instructions if pending */}
+                {/* Bagian Instruksi Pembayaran */}
                 {result.status === "PENDING" && result.paymentCode && (() => {
                   const isManual = result.paymentMethod?.toLowerCase().includes("manual");
                   const getManualDetails = (paymentMethod: string) => {
                     const method = paymentMethod?.toLowerCase() || "";
-                    if (method.includes("bca")) {
-                      return { type: "Bank BCA", account: "8830198271", name: "Kelompok Sultan Top Up" };
-                    } else if (method.includes("dana")) {
-                      return { type: "DANA E-Wallet", account: "0812-3456-7890", name: "Sultan Top Up" };
-                    } else if (method.includes("gopay")) {
-                      return { type: "GoPay E-Wallet", account: "0812-3456-7890", name: "Sultan Top Up" };
-                    }
+                    if (method.includes("bca")) return { type: "Bank BCA", account: "8830198271", name: "Kelompok Sultan Top Up" };
+                    if (method.includes("dana")) return { type: "DANA E-Wallet", account: "0812-3456-7890", name: "Sultan Top Up" };
+                    if (method.includes("gopay")) return { type: "GoPay E-Wallet", account: "0812-3456-7890", name: "Sultan Top Up" };
                     return { type: "Manual Transfer", account: "0812-3456-7890", name: "Sultan Top Up" };
                   };
                   const manualDetails = isManual ? getManualDetails(result.paymentMethod) : null;
@@ -257,13 +292,7 @@ export default function LacakPesananPage() {
                               📱 WhatsApp Konfirmasi
                             </a>
                             <button
-                              onClick={async () => {
-                                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-                                toast.success("Menjalankan Otorisasi...");
-                                await fetch(`${apiUrl}/api/transactions/${result.id}/pay`, { method: "POST" });
-                                toast.success("Pembayaran Berhasil Dilunasi!");
-                                handleSearch(new Event('submit') as any); // Refresh data
-                              }}
+                              onClick={handleSimulatePayment}
                               className="flex-1 bg-dark-bg text-brand-400 border border-brand-500/30 hover:bg-brand-500 hover:text-white transition-all font-bold text-xs uppercase tracking-wider rounded-xl py-2.5"
                             >
                               ⚡ Lunas Instan (Simulasi)
@@ -283,16 +312,9 @@ export default function LacakPesananPage() {
                             </span>
                           </div>
                           
-                          {/* Tombol pelunasan khusus simulasi/demo admin */}
                           <div>
                             <button
-                              onClick={async () => {
-                                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-                                toast.success("Menjalankan Otorisasi...");
-                                await fetch(`${apiUrl}/api/transactions/${result.id}/pay`, { method: "POST" });
-                                toast.success("Pembayaran Berhasil Dilunasi!");
-                                handleSearch(new Event('submit') as any); // Refresh data
-                              }}
+                              onClick={handleSimulatePayment}
                               className="mt-4 text-xs bg-dark-bg text-brand-400 px-4 py-2 rounded-lg border border-brand-500/30 hover:bg-brand-500 hover:text-white transition-colors font-bold tracking-wide uppercase"
                             >
                               [SIMULASI] Jalankan Protokol Lunas
@@ -304,11 +326,10 @@ export default function LacakPesananPage() {
                   );
                 })()}
 
-                {/* Barcode futuristic visual */}
+                {/* Futuristic Barcode */}
                 <div className="flex flex-col items-center justify-center mt-10 pt-8 border-t border-white/5 relative z-10">
                   <div className="text-[9px] text-theme-muted font-mono tracking-[0.25em] uppercase mb-3">Satelit Hash Invoice</div>
                   <div className="bg-white/[0.02] p-4 rounded-2xl flex items-center justify-center gap-1.5 hover:bg-white/[0.04] transition-all w-max shadow-inner border border-white/5">
-                    {/* Styled barcode lines */}
                     {[1, 2.5, 1.2, 3.2, 1.8, 4, 1.5, 2.5, 1, 3.5, 1.2, 4.2, 2.8, 1, 3, 2, 1.2, 4, 2.2, 1, 3.2, 1.5, 2].map((height, i) => (
                       <div 
                         key={i} 
