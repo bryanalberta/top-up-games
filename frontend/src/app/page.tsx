@@ -1,9 +1,6 @@
 import HomeClient from '@/components/HomeClient';
 
-export const dynamic = 'force-dynamic';
-
 // Fetch games from our Node.js backend
-
 async function getGames() {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/games`, {

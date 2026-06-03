@@ -1,4 +1,3 @@
-export {};
 const { PrismaClient } = require("@prisma/client");
 const { syncDigiflazzHarga } = require("./src/utils/sync-katalog");
 
@@ -15,4 +14,3 @@ async function main() {
 }
 
 main().catch(console.error);
-

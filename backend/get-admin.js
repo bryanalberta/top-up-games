@@ -1,10 +1,9 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function checkAdmin() {
+async function main() {
   const admins = await prisma.admin.findMany();
-  console.log("Admins in DB:", admins.map(a => a.username));
-  process.exit(0);
+  console.log("Admins:", admins.map(a => a.username));
 }
 
-checkAdmin();
+main().finally(() => prisma.$disconnect());

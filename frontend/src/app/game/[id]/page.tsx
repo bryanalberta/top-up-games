@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, UserSquare2, Coins, Wallet } from 'lucide-react';
+import { Loader2, UserSquare2, Coins, Wallet, HelpCircle, ShieldCheck, Sparkles, Gem, ArrowRight, Info } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function GameDetail({ params }: { params: { id: string } }) {
@@ -17,22 +17,92 @@ export default function GameDetail({ params }: { params: { id: string } }) {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [paymentMethod, setPaymentMethod] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showIdGuide, setShowIdGuide] = useState(false);
+
+  const getProductVisuals = (name: string) => {
+    const lowercase = name.toLowerCase();
+    const isPass = lowercase.includes("pass") || lowercase.includes("membership") || lowercase.includes("card") || lowercase.includes("codex");
+    
+    const match = name.match(/\d+/g);
+    const amount = match ? parseInt(match[0].replace(/\./g, '')) : 0;
+    
+    if (isPass) {
+      return {
+        icon: "🎫",
+        glowColor: "group-hover:border-amber-500/50 group-hover:shadow-[0_0_20px_rgba(245,158,11,0.2)] bg-amber-500/5",
+        badge: "PASS KILAT"
+      };
+    }
+    
+    if (amount >= 2000) {
+      return {
+        icon: "👑",
+        glowColor: "group-hover:border-red-500/50 group-hover:shadow-[0_0_20px_rgba(239,68,68,0.2)] bg-red-500/5",
+        badge: "SULTAN BOX"
+      };
+    } else if (amount >= 500) {
+      return {
+        icon: "💎",
+        glowColor: "group-hover:border-purple-500/50 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.2)] bg-purple-500/5",
+        badge: "VALUE CHEST"
+      };
+    } else if (amount >= 100) {
+      return {
+        icon: "🪙",
+        glowColor: "group-hover:border-cyan-500/50 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.2)] bg-cyan-500/5",
+        badge: "PRO STACK"
+      };
+    } else {
+      return {
+        icon: "✨",
+        glowColor: "group-hover:border-emerald-500/50 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] bg-emerald-500/5",
+        badge: "LITE BAG"
+      };
+    }
+  };
+
+  const paymentMethods = [
+    {
+      name: 'Sandbox Gateway (Simulasi)',
+      badge: '⚡ PROSES INSTAN',
+      logo: '🤖',
+      color: 'border-orange-500/40 text-orange-400 bg-orange-500/5',
+      desc: 'Simulasi instan 1 detik untuk uji coba sistem.',
+      fee: 'Bebas Biaya Admin'
+    },
+    {
+      name: 'BCA Transfer (Manual)',
+      badge: '🕒 5 MNT VERIFIKASI',
+      logo: '🏦',
+      color: 'border-blue-500/40 text-blue-400 bg-blue-500/5',
+      desc: 'Transfer ke rekening BCA manual lewat m-Banking.',
+      fee: 'Biaya admin Rp 0'
+    },
+    {
+      name: 'DANA E-Wallet (Manual)',
+      badge: '⚡ VERIFIKASI CEPAT',
+      logo: '📱',
+      color: 'border-sky-500/40 text-sky-400 bg-sky-500/5',
+      desc: 'Transfer e-wallet DANA. Mudah & instan.',
+      fee: 'Biaya admin Rp 0'
+    },
+    {
+      name: 'GoPay E-Wallet (Manual)',
+      badge: '⚡ VERIFIKASI CEPAT',
+      logo: '🟢',
+      color: 'border-emerald-500/40 text-emerald-400 bg-emerald-500/5',
+      desc: 'Transfer e-wallet GoPay. Mudah & aman.',
+      fee: 'Biaya admin Rp 0'
+    }
+  ];
 
   useEffect(() => {
-    const fetchGame = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/games/${params.id}`);
-        if (!res.ok) throw new Error("Game not found");
-        const data = await res.json();
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/games/${params.id}`)
+      .then((res) => res.json())
+      .then((data) => {
         setGame(data);
-      } catch (err) {
-        console.error("Fetch Error:", err);
-        setGame({ error: true });
-      } finally {
         setLoading(false);
-      }
-    };
-    fetchGame();
+      });
   }, [params.id]);
 
   const handleTransaction = async () => {
@@ -57,11 +127,12 @@ export default function GameDetail({ params }: { params: { id: string } }) {
 
       if (res.ok) {
         const result = await res.json();
-        toast.success("Memproses transaksi...");
         if (result.payment_url) {
+          toast.success("Menghubungkan ke Gateway Pembayaran...");
           window.location.href = result.payment_url;
         } else {
-          router.push(`/lacak?id=${result.id}`);
+          toast.success("Pesanan Manual Terdaftar!");
+          router.push(`/success?trx_id=${result.id}`);
         }
       } else {
         toast.error("Gagal memproses transaksi.");
@@ -130,36 +201,67 @@ export default function GameDetail({ params }: { params: { id: string } }) {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="glass-card p-6 md:p-8 relative"
             >
-              <div className="absolute -left-4 -top-4 w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-400 via-brand-500 to-brand-300 border-4 border-dark-bg flex items-center justify-center font-bold text-white shadow-[0_0_20px_rgba(245,158,11,0.4)] transform -rotate-6 z-10">
-                <span className="text-xl">1</span>
+              <div className="absolute -left-4 -top-4 w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-400 via-brand-500 to-brand-300 border-4 border-dark-bg flex items-center justify-center font-bold text-white shadow-[0_0_20px_rgba(0,242,254,0.4)] transform -rotate-6">
+                <UserSquare2 size={24} className="animate-pulse" />
               </div>
-              <h2 className="text-xl items-center font-bold mb-6 text-theme-text border-b border-dark-border pb-4 pl-4 flex gap-3">
-                <UserSquare2 size={24} className="text-brand-400" /> Masukkan ID Pemain
-              </h2>
+              
+              <div className="flex justify-between items-center border-b border-dark-border pb-4 mb-6 pl-4">
+                <h2 className="text-xl font-bold text-theme-text">Masukkan ID Game</h2>
+                <button 
+                  onClick={() => setShowIdGuide(!showIdGuide)}
+                  className="flex items-center gap-1.5 text-xs font-bold text-brand-400 hover:text-brand-300 bg-brand-500/10 border border-brand-500/20 px-3 py-1.5 rounded-xl transition-all shadow-[0_0_10px_rgba(0,242,254,0.1)]"
+                >
+                  <HelpCircle size={14} /> Panduan ID
+                </button>
+              </div>
+
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1 group">
-                  <label className="text-sm text-theme-muted mb-2 block group-focus-within:text-brand-400 transition-colors font-semibold">User ID (ID Pemain)</label>
+                  <label className="text-xs text-theme-muted mb-2.5 block group-focus-within:text-brand-400 transition-colors font-black uppercase tracking-wider">User ID Target</label>
                   <input 
                     type="text" 
                     value={gameUserId}
                     onChange={(e) => setGameUserId(e.target.value)}
-
                     placeholder="Contoh: 12345678"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/50 focus:bg-white/10 backdrop-blur-sm transition-all font-mono placeholder-white/30 hover:border-white/20 shadow-inner"
+                    className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:bg-white/[0.05] backdrop-blur-sm transition-all font-mono placeholder-white/20 hover:border-white/20 shadow-inner"
                   />
                 </div>
                 <div className="flex-1 group">
-                  <label className="text-sm text-theme-muted mb-2 block group-focus-within:text-brand-400 transition-colors font-semibold">Zone ID (Opsional)</label>
+                  <label className="text-xs text-theme-muted mb-2.5 block group-focus-within:text-brand-400 transition-colors font-black uppercase tracking-wider">Zone ID / Server</label>
                   <input 
                     type="text" 
                     value={gameZoneId}
                     onChange={(e) => setGameZoneId(e.target.value)}
-                    placeholder="Contoh: 1234"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/50 focus:bg-white/10 backdrop-blur-sm transition-all font-mono placeholder-white/30 hover:border-white/20 shadow-inner"
+                    placeholder="Contoh: 1234 (Opsional)"
+                    className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:bg-white/[0.05] backdrop-blur-sm transition-all font-mono placeholder-white/20 hover:border-white/20 shadow-inner"
                   />
                 </div>
               </div>
-              <p className="text-xs text-brand-500/70 mt-3 font-medium">💡 Untuk mengetahui User ID Anda, silahkan klik menu profile di bagian kiri atas pada menu utama game.</p>
+
+              {/* ID Guide Drawer Panel */}
+              <AnimatePresence>
+                {showIdGuide && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-6 bg-brand-500/5 border border-brand-500/20 rounded-2xl p-5 relative overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 blur-xl pointer-events-none"></div>
+                    <div className="flex gap-3 items-start relative z-10">
+                      <Info size={18} className="text-brand-400 flex-shrink-0 mt-0.5" />
+                      <div className="text-xs leading-relaxed font-medium">
+                        <span className="text-white font-bold block mb-1">Cara Menemukan Player ID & Zone ID:</span>
+                        1. Buka Game **{game.name}** di ponsel/PC Anda.<br />
+                        2. Masuk ke halaman profil utama (klik ikon foto profil di sudut kiri atas).<br />
+                        3. Nomor identitas Anda terletak di bawah nama profil. Format ID: **ID Utama** (e.g. 12345678) dan **Zone/Server ID** biasanya tercantum di dalam tanda kurung (e.g. 1234).<br />
+                        4. Salin nomor tersebut dan tempelkan ke kolom input di atas.
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <p className="text-xs text-brand-500/70 mt-3.5 font-medium flex items-center gap-1.5"><Sparkles size={12} className="animate-pulse" /> Pastikan Player ID yang Anda masukkan sudah benar untuk menjamin transaksi sukses!</p>
             </motion.div>
 
             {/* Step 2: Nominals */}
@@ -169,32 +271,57 @@ export default function GameDetail({ params }: { params: { id: string } }) {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="glass-card p-6 md:p-8 relative"
             >
-              <div className="absolute -left-4 -top-4 w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-400 via-brand-500 to-brand-300 border-4 border-dark-bg flex items-center justify-center font-bold text-white shadow-[0_0_20px_rgba(245,158,11,0.4)] transform -rotate-6 z-10">
-                <span className="text-xl">2</span>
+              <div className="absolute -left-4 -top-4 w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-400 via-brand-500 to-brand-300 border-4 border-dark-bg flex items-center justify-center font-bold text-white shadow-[0_0_20px_rgba(0,242,254,0.4)] transform -rotate-6">
+                <Coins size={24} className="animate-pulse" />
               </div>
-              <h2 className="text-xl font-bold mb-6 text-theme-text border-b border-dark-border pb-4 pl-4 flex gap-3">
-                <Coins size={24} className="text-brand-400" /> Pilih Nominal Top Up
-              </h2>
+              <h2 className="text-xl font-bold mb-6 text-theme-text border-b border-dark-border pb-4 pl-4">Pilih Nominal</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {game.products?.map((product: any) => (
-                  <motion.div 
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                    key={product.id}
-                    onClick={() => setSelectedProduct(product)}
-                    className={`cursor-pointer rounded-2xl p-4 transition-all duration-300 border overflow-hidden relative group backdrop-blur-sm ${selectedProduct?.id === product.id ? 'bg-brand-500/20 border-brand-400 shadow-[inset_0_0_20px_rgba(14,165,233,0.3),0_0_20px_rgba(14,165,233,0.4)] ring-1 ring-brand-400 scale-[1.02] z-10' : 'bg-white/5 border-white/10 hover:border-brand-400/50 hover:bg-white/10 hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]'}`}
-                  >
-                    {selectedProduct?.id === product.id && (
-                       <div className="absolute top-0 right-0 w-8 h-8 bg-brand-500 rounded-bl-2xl flex items-center justify-center text-white font-bold text-xs shadow-[-2px_2px_10px_rgba(20,184,166,0.5)]">
-                         ✓
-                       </div>
-                    )}
-                    <div className="font-bold text-theme-text mb-1">{product.name}</div>
-                    <div className="text-brand-400 font-medium text-sm">
-                      {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(product.price)}
-                    </div>
-                  </motion.div>
-                ))}
+                {game.products?.map((product: any) => {
+                  const visuals = getProductVisuals(product.name);
+                  const isSelected = selectedProduct?.id === product.id;
+                  
+                  return (
+                    <motion.div 
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.98 }}
+                      key={product.id}
+                      onClick={() => setSelectedProduct(product)}
+                      className={`cursor-pointer rounded-3xl p-5 transition-all duration-500 border overflow-hidden relative group backdrop-blur-md flex flex-col justify-between min-h-[125px] ${
+                        isSelected 
+                          ? 'bg-gradient-to-br from-brand-500/10 to-accent-purple/10 border-brand-400 shadow-[inset_0_0_25px_rgba(0,242,254,0.15),0_0_25px_rgba(0,242,254,0.25)] ring-1 ring-brand-400 scale-[1.02] z-10' 
+                          : `bg-white/[0.02] border-white/5 hover:border-brand-500/30 hover:bg-white/[0.04] ${visuals.glowColor}`
+                      }`}
+                    >
+                      {/* Visual Category Icon & Glow */}
+                      <div className="absolute -right-4 -bottom-4 text-6xl opacity-[0.03] group-hover:opacity-[0.08] group-hover:scale-125 transition-all duration-500 z-0">
+                        {visuals.icon}
+                      </div>
+
+                      {/* Selection Indicator pill */}
+                      <div className="flex justify-between items-start mb-3 relative z-10">
+                        <span className={`text-[9px] font-black uppercase px-2.5 py-1 rounded-full ${
+                          isSelected ? 'bg-brand-500/20 text-brand-300 border border-brand-400/40' : 'bg-white/5 text-theme-muted border border-white/5'
+                        }`}>
+                          {visuals.badge}
+                        </span>
+                        
+                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${
+                          isSelected ? 'border-brand-400 bg-brand-500/10' : 'border-white/10'
+                        }`}>
+                          {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-brand-400 shadow-[0_0_5px_#00f2fe]"></div>}
+                        </div>
+                      </div>
+
+                      {/* Product details */}
+                      <div className="relative z-10 mt-auto">
+                        <div className="font-extrabold text-sm sm:text-base text-white tracking-tight leading-tight mb-1">{product.name}</div>
+                        <div className="text-brand-400 font-black text-xs sm:text-sm">
+                          {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(product.price)}
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
             </motion.div>
 
@@ -205,35 +332,66 @@ export default function GameDetail({ params }: { params: { id: string } }) {
               transition={{ duration: 0.5, delay: 0.4 }}
               className="glass-card p-6 md:p-8 relative"
             >
-              <div className="absolute -left-4 -top-4 w-12 h-12 rounded-2xl bg-gradient-to-br from-accent-purple to-pink-500 border-4 border-dark-bg flex items-center justify-center font-bold text-white shadow-[0_0_20px_rgba(139,92,246,0.5)] transform -rotate-6 z-10">
-                <span className="text-xl">3</span>
+              <div className="absolute -left-4 -top-4 w-12 h-12 rounded-2xl bg-gradient-to-br from-accent-purple to-purple-600 border-4 border-dark-bg flex items-center justify-center font-bold text-white shadow-[0_0_20px_rgba(168,85,247,0.3)] transform -rotate-6">
+                <Wallet size={24} className="animate-pulse" />
               </div>
-              <h2 className="text-xl font-bold mb-3 text-theme-text border-b border-dark-border pb-4 pl-4 flex gap-3">
-                <Wallet size={24} className="text-accent-purple" /> Pilih Metode Bayar
-              </h2>
-              <p className="text-xs text-theme-muted mb-6 pl-4 font-medium italic">Pilih metode pembayaran favorit Anda. Transaksi diproses otomatis.</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {['Qris', 'Gopay', 'Dana', 'Ovo', 'ShopeePay', 'BCA Virtual Account', 'Transfer Manual'].map((method, idx) => (
-                  <motion.div 
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                    key={method}
-                    onClick={() => setPaymentMethod(method)}
-                    className={`cursor-pointer rounded-2xl p-4 flex flex-col justify-between transition-all duration-300 border min-h-[100px] relative overflow-hidden backdrop-blur-sm ${paymentMethod === method ? 'bg-accent-purple/20 border-accent-purple shadow-[inset_0_0_20px_rgba(139,92,246,0.3),0_0_20px_rgba(139,92,246,0.4)] ring-1 ring-accent-purple scale-[1.02] z-10' : 'bg-white/5 border-white/10 hover:border-accent-purple/50 hover:bg-white/10 hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]'}`}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                       <span className={`font-bold text-sm transition-colors ${paymentMethod === method ? 'text-theme-text' : 'text-theme-muted'}`}>{method}</span>
-                       <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${paymentMethod === method ? 'border-accent-purple' : 'border-gray-600'}`}>
-                         {paymentMethod === method && <motion.div layoutId="payment-dot" className="w-2.5 h-2.5 rounded-full bg-accent-purple shadow-[0_0_8px_rgba(139,92,246,0.8)]"></motion.div>}
-                       </div>
-                    </div>
-                    {selectedProduct && paymentMethod === method && (
-                       <div className="text-brand-400 font-extrabold text-sm mt-auto">
-                        {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(selectedProduct.price)}
-                       </div>
-                    )}
-                  </motion.div>
-                ))}
+              <h2 className="text-xl font-bold mb-6 text-theme-text border-b border-dark-border pb-4 pl-4">Pilih Pembayaran</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {paymentMethods.map((method) => {
+                  const isSelected = paymentMethod === method.name;
+                  
+                  return (
+                    <motion.div 
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      key={method.name}
+                      onClick={() => setPaymentMethod(method.name)}
+                      className={`cursor-pointer rounded-3xl p-5 flex flex-col justify-between transition-all duration-500 border relative overflow-hidden backdrop-blur-md min-h-[140px] group ${
+                        isSelected 
+                          ? 'bg-gradient-to-br from-accent-purple/10 to-brand-500/10 border-accent-purple shadow-[inset_0_0_25px_rgba(168,85,247,0.1),0_0_25px_rgba(168,85,247,0.2)] ring-1 ring-accent-purple scale-[1.01] z-10' 
+                          : 'bg-white/[0.02] border-white/5 hover:border-accent-purple/30 hover:bg-white/[0.04]'
+                      }`}
+                    >
+                      {/* Background Glowing Vector */}
+                      <div className="absolute -right-6 -bottom-6 text-7xl opacity-[0.03] group-hover:opacity-[0.08] transition-all duration-500 z-0">
+                        {method.logo}
+                      </div>
+
+                      <div className="flex justify-between items-start mb-3 relative z-10 gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-2xl border flex items-center justify-center text-xl shadow-inner ${
+                            isSelected ? 'bg-accent-purple/20 border-accent-purple/50' : 'bg-white/5 border-white/10'
+                          }`}>
+                            {method.logo}
+                          </div>
+                          <div>
+                            <span className="font-extrabold text-sm text-white block tracking-tight leading-tight">{method.name.split(' (')[0]}</span>
+                            <span className="text-[9px] font-black text-theme-muted block mt-0.5">{method.name.includes('Manual') ? 'TRANSFER MANUAL' : 'GATEWAY SIMULASI'}</span>
+                          </div>
+                        </div>
+
+                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors flex-shrink-0 ${
+                          isSelected ? 'border-accent-purple bg-accent-purple/10' : 'border-white/10'
+                        }`}>
+                          {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-accent-purple shadow-[0_0_5px_#ff007f]"></div>}
+                        </div>
+                      </div>
+
+                      {/* Method Description and Admin Fee Badge */}
+                      <p className="text-[11px] text-theme-muted font-medium mb-3 relative z-10 leading-relaxed max-w-[90%]">{method.desc}</p>
+
+                      <div className="flex justify-between items-center relative z-10 mt-auto pt-3 border-t border-white/5">
+                        <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-md ${
+                          isSelected ? 'bg-accent-purple/20 text-accent-purple border border-accent-purple/30' : 'bg-white/5 text-theme-muted border border-white/5'
+                        }`}>
+                          {method.badge}
+                        </span>
+                        
+                        <span className="text-[10px] font-bold text-brand-400 font-mono">{method.fee}</span>
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
             </motion.div>
 

@@ -23,7 +23,6 @@ model Game {
   publisher   String
   imageUrl    String
   description String?
-  category    String   @default("Mobile") // e.g. "Mobile", "PC Game"
   isPopular    Boolean       @default(false)
   products     Product[]
   transactions Transaction[]

@@ -48,36 +48,45 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleApprovePay = async (trxId: string) => {
-    const token = localStorage.getItem('adminToken');
-    if (!token) {
-      toast.error("Sesi Anda habis. Harap login kembali.");
-      router.push('/admin/login');
-      return;
-    }
-
+  const handleApprove = async (id: string) => {
     try {
-      toast.loading("Memproses persetujuan pembayaran...", { id: "approve-loading" });
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${apiUrl}/api/transactions/${trxId}/pay`, {
-        method: "POST",
-        headers: { 
-          "Authorization": `Bearer ${token}`
-        }
+      const token = localStorage.getItem('adminToken');
+      if (!token) return;
+      
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/transactions/${id}/approve`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
       });
-
-      toast.dismiss("approve-loading");
-
+      
       if (res.ok) {
-        toast.success("Transaksi berhasil disetujui LUNAS!");
-        fetchAdminData(); // Refresh data table
+        toast.success("Transaksi manual berhasil disetujui (Lunas)!");
+        fetchAdminData();
       } else {
-        const errData = await res.json().catch(() => ({}));
-        toast.error("Gagal menyetujui transaksi: " + (errData.error || "Terjadi kesalahan"));
+        toast.error("Gagal menyetujui transaksi.");
       }
-    } catch (e: any) {
-      toast.dismiss("approve-loading");
-      toast.error("Terjadi kesalahan koneksi.");
+    } catch (e) {
+      toast.error("Terjadi kesalahan jaringan.");
+    }
+  };
+
+  const handleReject = async (id: string) => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) return;
+      
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/transactions/${id}/reject`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (res.ok) {
+        toast.success("Transaksi manual berhasil ditolak.");
+        fetchAdminData();
+      } else {
+        toast.error("Gagal menolak transaksi.");
+      }
+    } catch (e) {
+      toast.error("Terjadi kesalahan jaringan.");
     }
   };
 
@@ -101,16 +110,16 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-black flex items-center gap-3 text-white drop-shadow-xl tracking-tight">
-              <span className="p-2 bg-accent-purple/20 text-accent-purple rounded-xl border border-accent-purple/40 shadow-[0_0_20px_rgba(139,92,246,0.3)]">
+            <h1 className="text-3xl md:text-4xl font-black flex items-center gap-3 text-white drop-shadow-xl tracking-tight font-display">
+              <span className="p-2 bg-brand-500/10 text-brand-400 rounded-xl border border-brand-500/30 shadow-[0_0_20px_rgba(197,168,128,0.25)]">
                 <LayoutDashboard size={28} className="animate-pulse" />
               </span>
-              Pusat Akun
+              Pusat Komando
             </h1>
             <p className="text-theme-muted mt-2">Ringkasan performa dan riwayat pesanan Sultan Top Up.</p>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/" className="btn-primary bg-white/5 border border-white/20 hover:bg-white/10 text-white text-sm px-6 py-2.5">
+            <Link href="/" className="bg-white/5 hover:bg-white/10 text-white border border-white/10 px-6 py-3 rounded-xl font-bold transition-all text-sm backdrop-blur-md shadow-lg">
               Ke Toko
             </Link>
             <button 
@@ -119,7 +128,7 @@ export default function AdminDashboard() {
                 toast.success('Sesi Berakhir.');
                 router.push('/admin/login');
               }}
-              className="btn-primary bg-red-500/10 border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white text-sm px-6 py-2.5 flex items-center gap-2"
+              className="bg-red-500/5 hover:bg-red-500/15 text-red-400 border border-red-500/20 px-6 py-3 rounded-xl font-bold transition-all text-sm flex items-center gap-2"
             >
               <LogOut size={16} /> Logout
             </button>
@@ -130,13 +139,13 @@ export default function AdminDashboard() {
         <div className="flex gap-4 mb-8 border-b border-white/10 pb-4 overflow-x-auto custom-scrollbar">
           <button 
             onClick={() => setActiveTab('beranda')}
-            className={`px-6 py-2.5 rounded-xl font-bold transition-all whitespace-nowrap ${activeTab === 'beranda' ? 'bg-brand-500 text-white shadow-[0_0_20px_rgba(14,165,233,0.4)]' : 'bg-white/5 text-theme-muted hover:text-white hover:bg-white/10 border border-white/10'}`}
+            className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === 'beranda' ? 'bg-brand-500 text-black shadow-[0_4px_20px_rgba(197,168,128,0.25)] border border-brand-400' : 'bg-white/5 text-theme-muted hover:text-white hover:bg-white/10 border border-white/10'}`}
           >
             Beranda Status
           </button>
           <button 
             onClick={() => setActiveTab('games')}
-            className={`px-6 py-2.5 rounded-xl font-bold transition-all whitespace-nowrap ${activeTab === 'games' ? 'bg-accent-purple text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'bg-white/5 text-theme-muted hover:text-white hover:bg-white/10 border border-white/10'}`}
+            className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === 'games' ? 'bg-brand-500 text-black shadow-[0_4px_20px_rgba(197,168,128,0.25)] border border-brand-400' : 'bg-white/5 text-theme-muted hover:text-white hover:bg-white/10 border border-white/10'}`}
           >
             Manajemen Game & Harga
           </button>
@@ -148,7 +157,7 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="glass-card p-6 relative overflow-hidden group hover:border-brand-400/50 hover:shadow-[0_8px_30px_rgba(14,165,233,0.2)]"
+            className="glass-card p-6 relative overflow-hidden group hover:border-brand-400/50 hover:shadow-[0_8px_30px_rgba(197,168,128,0.15)]"
           >
             <div className="glow-effect"></div>
             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full blur-[40px] -mr-10 -mt-10 group-hover:bg-brand-500/30 transition-colors animate-pulse-glow"></div>
@@ -159,41 +168,41 @@ export default function AdminDashboard() {
                   {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(stats?.totalRevenue || 0)}
                 </h3>
               </div>
-              <div className="p-3 bg-brand-500/20 text-brand-400 rounded-xl border border-brand-500/30 shadow-[0_0_20px_rgba(14,165,233,0.3)]"><Wallet size={24} /></div>
+              <div className="p-3 bg-brand-500/20 text-brand-400 rounded-xl border border-brand-500/30 shadow-[0_0_20px_rgba(197,168,128,0.2)]"><Wallet size={24} /></div>
             </div>
             <div className="text-xs text-brand-300 flex items-center gap-1 font-medium"><TrendingUp size={14} /> Hanya transaksi sukses</div>
           </motion.div>
 
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="glass-card p-6 relative overflow-hidden group hover:border-orange-400/50 hover:shadow-[0_8px_30px_rgba(249,115,22,0.2)]"
+            className="glass-card p-6 relative overflow-hidden group hover:border-amber-400/50 hover:shadow-[0_8px_30px_rgba(245,158,11,0.1)]"
           >
             <div className="glow-effect"></div>
-            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-[40px] -mr-10 -mt-10 group-hover:bg-orange-500/30 transition-colors animate-pulse-glow"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-[40px] -mr-10 -mt-10 group-hover:bg-amber-500/15 transition-colors animate-pulse-glow"></div>
             <div className="flex justify-between items-start mb-4 relative z-10">
               <div>
                 <p className="text-theme-muted font-bold mb-1 uppercase tracking-widest text-xs">Pesanan Pending</p>
-                <h3 className="text-3xl font-black text-orange-400 drop-shadow-md">{stats?.totalPending || 0}</h3>
+                <h3 className="text-3xl font-black text-amber-400 drop-shadow-md">{stats?.totalPending || 0}</h3>
               </div>
-              <div className="p-3 bg-orange-500/20 text-orange-400 rounded-xl border border-orange-500/30 shadow-[0_0_20px_rgba(249,115,22,0.3)]"><AlertCircle size={24} /></div>
+              <div className="p-3 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.15)]"><AlertCircle size={24} /></div>
             </div>
-            <div className="text-xs text-orange-300 flex items-center gap-1 font-medium">Menunggu pembayaran pelanggan</div>
+            <div className="text-xs text-amber-300 flex items-center gap-1 font-medium">Menunggu pembayaran pelanggan</div>
           </motion.div>
 
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="glass-card p-6 relative overflow-hidden group hover:border-green-400/50 hover:shadow-[0_8px_30px_rgba(34,197,94,0.2)]"
+            className="glass-card p-6 relative overflow-hidden group hover:border-emerald-400/50 hover:shadow-[0_8px_30px_rgba(16,185,129,0.1)]"
           >
             <div className="glow-effect"></div>
-            <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-[40px] -mr-10 -mt-10 group-hover:bg-green-500/30 transition-colors animate-pulse-glow"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-[40px] -mr-10 -mt-10 group-hover:bg-emerald-500/15 transition-colors animate-pulse-glow"></div>
             <div className="flex justify-between items-start mb-4 relative z-10">
               <div>
                 <p className="text-theme-muted font-bold mb-1 uppercase tracking-widest text-xs">Pesanan Sukses</p>
-                <h3 className="text-3xl font-black text-green-400 drop-shadow-md">{stats?.totalSuccess || 0}</h3>
+                <h3 className="text-3xl font-black text-emerald-400 drop-shadow-md">{stats?.totalSuccess || 0}</h3>
               </div>
-              <div className="p-3 bg-green-500/20 text-green-400 rounded-xl border border-green-500/30 shadow-[0_0_20px_rgba(34,197,94,0.3)]"><ShoppingCart size={24} /></div>
+              <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.15)]"><ShoppingCart size={24} /></div>
             </div>
-            <div className="text-xs text-green-300 flex items-center gap-1 font-medium">Total produk terjual</div>
+            <div className="text-xs text-emerald-300 flex items-center gap-1 font-medium">Total produk terjual</div>
           </motion.div>
         </div>
 
@@ -256,13 +265,25 @@ export default function AdminDashboard() {
                         </span>
                       </td>
                       <td className="p-4">
-                        {trx.status === 'PENDING' && (
-                          <button
-                            onClick={() => handleApprovePay(trx.id)}
-                            className="bg-green-600 hover:bg-green-500 text-white font-extrabold text-[10px] px-3 py-1.5 rounded-lg border border-green-500/30 shadow-md transition-all uppercase tracking-wide whitespace-nowrap hover:shadow-[0_0_10px_rgba(22,163,74,0.4)]"
-                          >
-                            Setujui Lunas
-                          </button>
+                        {trx.status === 'PENDING' && trx.paymentMethod.toLowerCase().includes('manual') ? (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleApprove(trx.id)}
+                              className="bg-green-600 hover:bg-green-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors shadow-md hover:shadow-green-600/30 cursor-pointer"
+                            >
+                              Setujui
+                            </button>
+                            <button
+                              onClick={() => handleReject(trx.id)}
+                              className="bg-red-600 hover:bg-red-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors shadow-md hover:shadow-red-600/30 cursor-pointer"
+                            >
+                              Tolak
+                            </button>
+                          </div>
+                        ) : trx.status === 'PENDING' ? (
+                          <span className="text-xs text-theme-muted italic">Menunggu System</span>
+                        ) : (
+                          <span className="text-xs text-theme-muted font-bold">-</span>
                         )}
                       </td>
                     </tr>
