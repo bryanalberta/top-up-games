@@ -48,6 +48,39 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleApprovePay = async (trxId: string) => {
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+      toast.error("Sesi Anda habis. Harap login kembali.");
+      router.push('/admin/login');
+      return;
+    }
+
+    try {
+      toast.loading("Memproses persetujuan pembayaran...", { id: "approve-loading" });
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/transactions/${trxId}/pay`, {
+        method: "POST",
+        headers: { 
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      toast.dismiss("approve-loading");
+
+      if (res.ok) {
+        toast.success("Transaksi berhasil disetujui LUNAS!");
+        fetchAdminData(); // Refresh data table
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        toast.error("Gagal menyetujui transaksi: " + (errData.error || "Terjadi kesalahan"));
+      }
+    } catch (e: any) {
+      toast.dismiss("approve-loading");
+      toast.error("Terjadi kesalahan koneksi.");
+    }
+  };
+
   useEffect(() => {
     fetchAdminData();
     // Auto refresh setiap 10 detik
@@ -186,12 +219,13 @@ export default function AdminDashboard() {
                   <th className="p-4 font-medium">Nominal</th>
                   <th className="p-4 font-medium">Metode</th>
                   <th className="p-4 font-medium">Status</th>
+                  <th className="p-4 font-medium">Aksi</th>
                 </tr>
               </thead>
               <tbody className="text-theme-text text-sm divide-y divide-dark-border/50">
                 {transactions.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="p-8 text-center text-theme-muted">Belum ada transaksi.</td>
+                    <td colSpan={7} className="p-8 text-center text-theme-muted">Belum ada transaksi.</td>
                   </tr>
                 ) : (
                   transactions.map((trx: any) => (
@@ -220,6 +254,16 @@ export default function AdminDashboard() {
                           <span className={`w-1.5 h-1.5 rounded-full animate-pulse shadow-xl ${trx.status === 'SUCCESS' ? 'bg-green-300 shadow-green-300/100' : trx.status === 'PENDING' ? 'bg-yellow-300 shadow-yellow-300/100' : 'bg-red-300 shadow-red-300/100'}`}></span>
                           {trx.status}
                         </span>
+                      </td>
+                      <td className="p-4">
+                        {trx.status === 'PENDING' && (
+                          <button
+                            onClick={() => handleApprovePay(trx.id)}
+                            className="bg-green-600 hover:bg-green-500 text-white font-extrabold text-[10px] px-3 py-1.5 rounded-lg border border-green-500/30 shadow-md transition-all uppercase tracking-wide whitespace-nowrap hover:shadow-[0_0_10px_rgba(22,163,74,0.4)]"
+                          >
+                            Setujui Lunas
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))

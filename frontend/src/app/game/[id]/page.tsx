@@ -57,11 +57,11 @@ export default function GameDetail({ params }: { params: { id: string } }) {
 
       if (res.ok) {
         const result = await res.json();
-        toast.success("Menghubungkan ke Gateway Pembayaran...");
+        toast.success("Memproses transaksi...");
         if (result.payment_url) {
           window.location.href = result.payment_url;
         } else {
-          router.push(`/lacak`);
+          router.push(`/lacak?id=${result.id}`);
         }
       } else {
         toast.error("Gagal memproses transaksi.");
@@ -213,7 +213,7 @@ export default function GameDetail({ params }: { params: { id: string } }) {
               </h2>
               <p className="text-xs text-theme-muted mb-6 pl-4 font-medium italic">Pilih metode pembayaran favorit Anda. Transaksi diproses otomatis.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {['Qris', 'Gopay', 'Dana', 'Ovo', 'ShopeePay', 'BCA Virtual Account'].map((method, idx) => (
+                {['Qris', 'Gopay', 'Dana', 'Ovo', 'ShopeePay', 'BCA Virtual Account', 'Transfer Manual'].map((method, idx) => (
                   <motion.div 
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.98 }}

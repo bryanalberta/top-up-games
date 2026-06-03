@@ -1,19 +1,23 @@
 "use client";
 
-import { useState } from 'react';
-import { Search, Loader2 } from 'lucide-react';
+import { useState, useEffect, Suspense } from 'react';
+import { Search, Loader2, CheckCircle2, AlertTriangle, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { useSearchParams } from 'next/navigation';
 
-export default function LacakPesananPage() {
+function LacakPesananContent() {
+  const searchParams = useSearchParams();
+  const queryId = searchParams.get('id');
+  const paySimulate = searchParams.get('pay_simulate');
+
   const [trxId, setTrxId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState('');
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!trxId) return;
+  const searchInvoice = async (invoiceId: string) => {
+    if (!invoiceId) return;
 
     setIsLoading(true);
     setError('');
@@ -21,7 +25,7 @@ export default function LacakPesananPage() {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${apiUrl}/api/transactions/${trxId}`);
+      const res = await fetch(`${apiUrl}/api/transactions/${invoiceId}`);
       
       if (!res.ok) {
         setError("Transaksi tidak ditemukan.");
@@ -31,7 +35,7 @@ export default function LacakPesananPage() {
       }
 
       const data = await res.json();
-      toast.success("Data Transaksi ditemukan obyek radar!");
+      toast.success("Data Transaksi ditemukan!");
       setResult({
         id: data.id,
         status: data.status,
@@ -40,6 +44,7 @@ export default function LacakPesananPage() {
         userId: data.gameUserId + (data.gameZoneId ? ` (${data.gameZoneId})` : ""),
         date: new Date(data.createdAt).toLocaleString('id-ID'),
         price: "Rp " + data.amount.toLocaleString('id-ID'),
+        rawPrice: data.amount,
         paymentMethod: data.paymentMethod,
         paymentCode: data.paymentCode
       });
@@ -49,6 +54,68 @@ export default function LacakPesananPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
+    if (queryId) {
+      setTrxId(queryId);
+      searchInvoice(queryId);
+    }
+  }, [queryId]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (trxId) {
+      searchInvoice(trxId.trim());
+    }
+  };
+
+  const handleSimulateWebhook = async () => {
+    if (!result) return;
+    try {
+      toast.success("Mengirimkan Simulasi Webhook Pembayaran Sukses...");
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/webhooks/midtrans`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          order_id: result.id,
+          transaction_status: "settlement",
+          fraud_status: "accept"
+        })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        if (data.status === "ok") {
+          toast.success("Simulasi Sukses! Status transaksi telah diperbarui.");
+          // Segarkan data transaksi
+          await searchInvoice(result.id);
+        } else {
+          toast.error("Simulasi gagal: " + (data.message || "Unknown error"));
+        }
+      } else {
+        toast.error("Server mengembalikan error saat simulasi webhook.");
+      }
+    } catch (e: any) {
+      toast.error("Gagal terhubung ke server untuk simulasi.");
+    }
+  };
+
+  // Generate link WhatsApp untuk konfirmasi manual
+  const getWhatsAppLink = () => {
+    if (!result) return "#";
+    const waNumber = "628123456789"; // Nomor Admin mock
+    const text = `Halo Admin, saya ingin konfirmasi pembayaran untuk:
+- Invoice ID: ${result.id}
+- Game: ${result.game}
+- Produk: ${result.product}
+- Game ID: ${result.userId}
+- Nominal: ${result.price}
+- Metode: ${result.paymentMethod}
+
+Mohon segera diproses. Terima kasih!`;
+    return `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`;
   };
 
   return (
@@ -140,13 +207,11 @@ export default function LacakPesananPage() {
                       <span className={`w-2 h-2 rounded-full animate-pulse shadow-xl ${result.status === 'SUCCESS' ? 'bg-green-300 shadow-green-300/100' : result.status === 'PENDING' ? 'bg-yellow-300 shadow-yellow-300/100' : 'bg-red-300 shadow-red-300/100'}`}></span>
                       {result.status === 'SUCCESS' ? 'BERHASIL' : result.status === 'PENDING' ? 'MENUNGGU' : 'GAGAL'}
                     </div>
-
                   </div>
                   <div className="text-left md:text-right">
                     <div className="text-theme-muted text-xs uppercase tracking-widest font-bold mb-2">Waktu Transaksi</div>
                     <div className="text-white text-sm font-mono tracking-tight drop-shadow-md">{result.date}</div>
                   </div>
-
                 </div>
 
                 {/* Body Struk */}
@@ -175,40 +240,87 @@ export default function LacakPesananPage() {
                     <span className="text-theme-muted text-sm uppercase tracking-widest font-bold">Total Pembayaran</span>
                     <span className="font-black text-neon text-2xl tracking-tighter">{result.price}</span>
                   </div>
-
                 </div>
 
-                {/* Render payment instructions if pending */}
-                {result.status === "PENDING" && result.paymentCode && (
+                {/* TAMPILAN JIKA STATUS PENDING */}
+                {result.status === "PENDING" && (
                   <div className="mt-8 pt-6 border-t border-white/10 relative z-10">
-                    <div className="bg-accent-gold/5 backdrop-blur-xl border border-accent-gold/40 rounded-3xl p-6 md:p-8 text-center shadow-[inset_0_0_30px_rgba(251,191,36,0.05),0_10px_40px_rgba(251,191,36,0.1)] relative overflow-hidden group">
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-px bg-gradient-to-r from-transparent via-accent-gold to-transparent opacity-50"></div>
-                      <p className="text-xs uppercase tracking-widest font-black text-accent-gold mb-3 flex items-center justify-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-accent-gold animate-pulse"></span> Otorisasi Pembayaran
-                      </p>
-                      <p className="text-sm font-medium text-theme-muted mb-6">Gunakan kode ini untuk menyelesaikan transfer pada metode yang dipilih.</p>
-                      <div className="bg-dark-bg/80 inline-block px-10 py-5 rounded-2xl border border-white/10 mb-4 shadow-inner ring-1 ring-white/5 group-hover:border-accent-gold/40 transition-colors">
-                        <span className="text-3xl md:text-5xl font-mono font-black tracking-widest text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]">
-                          {result.paymentCode}
-                        </span>
+                    {/* 1. Instruksi Transfer Manual */}
+                    {result.paymentMethod === "Transfer Manual" ? (
+                      <div className="bg-brand-500/5 backdrop-blur-xl border border-brand-500/20 rounded-3xl p-6 shadow-md text-center">
+                        <AlertTriangle className="mx-auto text-brand-400 mb-3" size={32} />
+                        <h4 className="text-brand-300 font-bold text-lg mb-2">Instruksi Transfer Manual</h4>
+                        <p className="text-sm text-theme-muted mb-4">Silakan lakukan transfer sebesar nominal pas ke rekening berikut:</p>
+                        
+                        <div className="bg-dark-bg/80 border border-white/10 rounded-2xl p-4 mb-4 font-mono text-left inline-block w-full max-w-sm">
+                          <div className="flex justify-between border-b border-white/5 pb-2 mb-2">
+                            <span className="text-theme-muted text-xs">Bank:</span>
+                            <span className="text-white font-bold text-sm">BCA (Bank Central Asia)</span>
+                          </div>
+                          <div className="flex justify-between border-b border-white/5 pb-2 mb-2">
+                            <span className="text-theme-muted text-xs">No. Rekening:</span>
+                            <span className="text-white font-black text-sm select-all">123-456-7890</span>
+                          </div>
+                          <div className="flex justify-between border-b border-white/5 pb-2 mb-2">
+                            <span className="text-theme-muted text-xs">Penerima:</span>
+                            <span className="text-white font-bold text-sm">SULTAN TOPUP</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-theme-muted text-xs">Nominal:</span>
+                            <span className="text-brand-400 font-black text-sm select-all">{result.price}</span>
+                          </div>
+                        </div>
+
+                        <div className="mt-2">
+                          <a 
+                            href={getWhatsAppLink()}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white font-bold text-sm px-6 py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(22,163,74,0.4)]"
+                          >
+                            Konfirmasi via WhatsApp <ExternalLink size={16} />
+                          </a>
+                        </div>
                       </div>
-                      
-                      {/* Tombol pelunasan khusus simulasi/demo admin */}
-                      <div>
+                    ) : (
+                      /* 2. Pembayaran Gateway */
+                      <div className="bg-accent-gold/5 backdrop-blur-xl border border-accent-gold/40 rounded-3xl p-6 text-center shadow-[inset_0_0_30px_rgba(251,191,36,0.05),0_10px_40px_rgba(251,191,36,0.1)] relative overflow-hidden group">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-px bg-gradient-to-r from-transparent via-accent-gold to-transparent opacity-50"></div>
+                        <p className="text-xs uppercase tracking-widest font-black text-accent-gold mb-3 flex items-center justify-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-accent-gold animate-pulse"></span> Otorisasi Pembayaran
+                        </p>
+                        <p className="text-sm font-medium text-theme-muted mb-6">Silakan selesaikan pembayaran Anda melalui window gateway atau link pembayaran.</p>
+                        
+                        {result.paymentCode && result.paymentCode.startsWith("http") ? (
+                          <a 
+                            href={result.paymentCode}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 bg-accent-gold hover:bg-yellow-500 text-dark-bg font-extrabold text-sm px-6 py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(251,191,36,0.4)] mb-4"
+                          >
+                            Buka Halaman Pembayaran <ExternalLink size={16} />
+                          </a>
+                        ) : (
+                          <div className="bg-dark-bg/80 inline-block px-10 py-5 rounded-2xl border border-white/10 mb-4 shadow-inner ring-1 ring-white/5">
+                            <span className="text-xl md:text-3xl font-mono font-black tracking-widest text-white">
+                              {result.paymentCode || "PROSES"}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* 3. Tombol Simulasi Pembayaran Sukses Sandbox */}
+                    {paySimulate === "true" && (
+                      <div className="mt-6 flex justify-center">
                         <button
-                          onClick={async () => {
-                            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-                            toast.success("Menjalankan Otorisasi...");
-                            await fetch(`${apiUrl}/api/transactions/${result.id}/pay`, { method: "POST" });
-                            toast.success("Pembayaran Berhasil Dilunasi!");
-                            handleSearch(new Event('submit') as any); // Refresh data
-                          }}
-                          className="mt-4 text-xs bg-dark-bg text-brand-400 px-4 py-2 rounded-lg border border-brand-500/30 hover:bg-brand-500 hover:text-white transition-colors font-bold tracking-wide uppercase"
+                          onClick={handleSimulateWebhook}
+                          className="flex items-center gap-2 bg-brand-500 hover:bg-brand-400 text-white font-extrabold text-xs px-6 py-3 rounded-xl border border-brand-400/50 hover:shadow-[0_0_20px_rgba(14,165,233,0.5)] transition-all uppercase tracking-wide"
                         >
-                          [ADMIN] Jalankan Protokol Lunas
+                          <CheckCircle2 size={16} /> [Demo] Simulasikan Pembayaran Sukses
                         </button>
                       </div>
-                    </div>
+                    )}
                   </div>
                 )}
               </motion.div>
@@ -217,5 +329,18 @@ export default function LacakPesananPage() {
         </div>
       </motion.div>
     </div>
+  );
+}
+
+export default function LacakPesananPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center flex-col gap-4 text-brand-400 font-bold bg-dark-bg">
+        <Loader2 className="w-12 h-12 animate-spin text-brand-500" />
+        <span className="animate-pulse text-xl">Menyiapkan radar pelacakan...</span>
+      </div>
+    }>
+      <LacakPesananContent />
+    </Suspense>
   );
 }
