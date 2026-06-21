@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 
-let dbUrl = process.env.DATABASE_URL;
+let dbUrl = process.env.DATABASE_URL || "file:./dev.db";
 
 if (process.env.VERCEL) {
   const pathsToTry = [
