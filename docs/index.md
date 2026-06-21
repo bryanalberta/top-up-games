@@ -6,7 +6,7 @@ Selamat datang di dokumentasi resmi **Sultan Top Up - Portal Layanan Game Premiu
 
 ## 🔗 Link Demo Aplikasi
 * **Tampilan Web (Frontend):** [https://sultan-topup-client.vercel.app](https://sultan-topup-client.vercel.app)
-* **API Server (Backend):** [https://sultan-topup-api.onrender.com](https://sultan-topup-api.onrender.com)
+* **API Server (Backend):** [https://top-up-games-dbux.vercel.app](https://top-up-games-dbux.vercel.app)
 
 ---
 
