@@ -15,8 +15,9 @@ export default function SandboxPaymentPage({ params }: { params: { id: string } 
   useEffect(() => {
     const fetchTrx = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-        const res = await fetch(`${apiUrl}/api/transactions/${params.id}`);
+        const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+        const apiUrl = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`;
+        const res = await fetch(`${apiUrl}/transactions/${params.id}`);
         if (!res.ok) throw new Error("Transaction not found");
         const data = await res.json();
         setTrx(data);
@@ -32,9 +33,10 @@ export default function SandboxPaymentPage({ params }: { params: { id: string } 
   const handleSimulate = async (status: "success" | "failed") => {
     setProcessing(status);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+      const apiUrl = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`;
       const endpoint = status === "success" ? "success" : "failed";
-      const res = await fetch(`${apiUrl}/api/sandbox/pay/${params.id}/${endpoint}`, {
+      const res = await fetch(`${apiUrl}/sandbox/pay/${params.id}/${endpoint}`, {
         method: "POST",
       });
 

@@ -27,8 +27,9 @@ export default function LacakPesananPage() {
 
   // 2. Pisahkan logika Fetching agar bisa dipanggil ulang dengan bersih
   const getTransactionData = async (targetId: string) => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-    const res = await fetch(`${apiUrl}/api/transactions/${targetId}`);
+    const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    const apiUrl = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`;
+    const res = await fetch(`${apiUrl}/transactions/${targetId}`);
     
     if (!res.ok) {
       throw new Error("Transaksi tidak ditemukan.");
@@ -79,10 +80,11 @@ export default function LacakPesananPage() {
     if (!result) return;
     
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const apiUrl = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`;
       toast.info("Menjalankan Otorisasi...");
       
-      const res = await fetch(`${apiUrl}/api/transactions/${result.id}/pay`, { method: "POST" });
+      const res = await fetch(`${apiUrl}/transactions/${result.id}/pay`, { method: "POST" });
       if (!res.ok) throw new Error();
 
       toast.success("Pembayaran Berhasil Dilunasi!");
