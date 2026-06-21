@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dokumentasi Sultan Top Up - Portal Layanan Game Premium VIP</title>
+  
+  <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Reset & Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    :root {
+      --bg-obsidian: #030008;
+      --bg-obsidian-card: #0a0614;
+      --bg-obsidian-sidebar: #05020c;
+      --gold-satin: #c5a880;
+      --gold-satin-hover: #d9be9b;
+      --gold-glow: rgba(197, 168, 128, 0.4);
+      --gold-glass: rgba(197, 168, 128, 0.08);
+      --purple-royal: #6b21a8;
+      --purple-royal-glow: rgba(107, 33, 168, 0.4);
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --border-gold: rgba(197, 168, 128, 0.15);
+      --border-gold-hover: rgba(197, 168, 128, 0.4);
+      --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-obsidian);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+      display: flex;
+    }
+
+    /* Layout Wrapper */
+    .app-container {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 280px;
+      background-color: var(--bg-obsidian-sidebar);
+      border-right: 1px solid var(--border-gold);
+      padding: 2.5rem 1.5rem;
+      position: fixed;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 100;
+      transition: var(--transition-smooth);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--text-primary);
+      text-decoration: none;
+      letter-spacing: 1px;
+      margin-bottom: 3rem;
+    }
+
+    .brand i {
+      color: var(--gold-satin);
+      filter: drop-shadow(0 0 8px var(--gold-glow));
+    }
+
+    .brand span {
+      background: linear-gradient(135deg, var(--text-primary) 30%, var(--gold-satin) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex-grow: 1;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 1.2rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: var(--transition-smooth);
+      border: 1px solid transparent;
+    }
+
+    .nav-item a:hover, .nav-item.active a {
+      color: var(--gold-satin);
+      background-color: var(--gold-glass);
+      border-color: var(--border-gold);
+      transform: translateX(5px);
+    }
+
+    .nav-item a i {
+      font-size: 1.1rem;
+      transition: var(--transition-smooth);
+    }
+
+    .nav-item a:hover i, .nav-item.active a i {
+      filter: drop-shadow(0 0 5px var(--gold-glow));
+    }
+
+    .sidebar-footer {
+      border-top: 1px solid var(--border-gold);
+      padding-top: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .sidebar-footer a {
+      color: var(--gold-satin);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      margin-top: 0.5rem;
+    }
+
+    .sidebar-footer a:hover {
+      color: var(--gold-satin-hover);
+      text-decoration: underline;
+    }
+
+    /* Main Content Area */
+    .main-content {
+      margin-left: 280px;
+      flex-grow: 1;
+      padding: 3rem 4rem;
+      max-width: 1200px;
+      transition: var(--transition-smooth);
+    }
+
+    /* Mobile Nav Overlay & Header */
+    .mobile-header {
+      display: none;
+      background-color: var(--bg-obsidian-sidebar);
+      border-bottom: 1px solid var(--border-gold);
+      padding: 1rem 1.5rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 101;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .menu-toggle {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Section Styles */
+    section {
+      padding: 4rem 0 2rem 0;
+      border-bottom: 1px solid rgba(197, 168, 128, 0.08);
+    }
+
+    section:last-of-type {
+      border-bottom: none;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 2.2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--text-primary);
+    }
+
+    .section-title i {
+      color: var(--gold-satin);
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(10, 6, 20, 0.8) 0%, rgba(5, 2, 12, 0.9) 100%);
+      border: 1px solid var(--border-gold);
+      border-radius: 20px;
+      padding: 4rem 3rem;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 4rem;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(107, 33, 168, 0.15);
+    }
+
+    .hero-banner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, var(--purple-royal-glow) 0%, transparent 70%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -40%;
+      left: -10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(197, 168, 128, 0.08) 0%, transparent 70%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      background-color: var(--gold-glass);
+      color: var(--gold-satin);
+      border: 1px solid var(--border-gold);
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 3rem;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--text-primary) 50%, var(--gold-satin) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      color: var(--text-secondary);
+      font-size: 1.15rem;
+      max-width: 750px;
+      margin-bottom: 2rem;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .hero-tag {
+      background-color: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    /* Cards Grid */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .overview-card {
+      background-color: var(--bg-obsidian-card);
+      border: 1px solid var(--border-gold);
+      border-radius: 12px;
+      padding: 2rem;
+      transition: var(--transition-smooth);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .overview-card:hover {
+      border-color: var(--border-gold-hover);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(197, 168, 128, 0.08);
+    }
+
+    .overview-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--gold-satin), var(--purple-royal));
+      opacity: 0;
+      transition: var(--transition-smooth);
+    }
+
+    .overview-card:hover::before {
+      opacity: 1;
+    }
+
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      background-color: var(--gold-glass);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border-gold);
+    }
+
+    .card-icon i {
+      color: var(--gold-satin);
+      font-size: 1.5rem;
+      filter: drop-shadow(0 0 5px var(--gold-glow));
+    }
+
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+    }
+
+    .card-text {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .card-text ul {
+      list-style-position: inside;
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    /* Interactive Features Section */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-item {
+      background-color: var(--bg-obsidian-card);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 1.5rem;
+      transition: var(--transition-smooth);
+    }
+
+    .feature-item:hover {
+      border-color: var(--border-gold);
+      background-color: rgba(197, 168, 128, 0.02);
+      transform: translateY(-2px);
+    }
+
+    .feature-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-header i {
+      color: var(--gold-satin);
+      font-size: 1.25rem;
+    }
+
+    .feature-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .feature-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    /* Sequential Steps Interactive UI */
+    .interactive-steps-container {
+      background-color: var(--bg-obsidian-card);
+      border: 1px solid var(--border-gold);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .tabs-header {
+      display: flex;
+      border-bottom: 1px solid var(--border-gold);
+      background-color: rgba(10, 6, 20, 0.5);
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 1.25rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    .tab-btn.active {
+      color: var(--gold-satin);
+      background-color: var(--bg-obsidian-card);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--gold-satin);
+      box-shadow: 0 0 10px var(--gold-glow);
+    }
+
+    .tab-content {
+      padding: 2.5rem;
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Steps Layout */
+    .steps-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 2.5rem;
+    }
+
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      padding-right: 1.5rem;
+    }
+
+    .step-list-item {
+      background-color: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 500;
+      transition: var(--transition-smooth);
+      text-align: left;
+    }
+
+    .step-list-item:hover {
+      background-color: rgba(197, 168, 128, 0.03);
+      border-color: rgba(197, 168, 128, 0.15);
+      color: var(--text-primary);
+    }
+
+    .step-list-item.active {
+      background-color: var(--gold-glass);
+      border-color: var(--border-gold);
+      color: var(--gold-satin);
+      box-shadow: inset 0 0 10px rgba(197, 168, 128, 0.05);
+    }
+
+    .step-number {
+      width: 28px;
+      height: 28px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      transition: var(--transition-smooth);
+    }
+
+    .step-list-item.active .step-number {
+      background-color: var(--gold-satin);
+      border-color: var(--gold-satin);
+      color: var(--bg-obsidian);
+      box-shadow: 0 0 8px var(--gold-glow);
+    }
+
+    /* Step Detail Content */
+    .step-detail-card {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .step-detail-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .step-detail-title span {
+      color: var(--gold-satin);
+    }
+
+    .step-detail-body {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .step-detail-body p {
+      margin-bottom: 1rem;
+    }
+
+    .step-detail-body ul {
+      list-style-position: inside;
+      margin-left: 0.5rem;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .step-detail-body li strong {
+      color: var(--text-primary);
+    }
+
+    .code-block {
+      background-color: #020104;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      padding: 1rem;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.85rem;
+      color: #e5e7eb;
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+
+    .code-title {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Flow Diagram Visualizer */
+    .flow-diagram-container {
+      background-color: var(--bg-obsidian-card);
+      border: 1px solid var(--border-gold);
+      border-radius: 16px;
+      padding: 3rem 2rem;
+      margin-top: 2rem;
+      overflow-x: auto;
+    }
+
+    .flow-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-width: 900px;
+      position: relative;
+    }
+
+    .flow-flex::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold-satin) 0%, var(--purple-royal) 100%);
+      z-index: 1;
+      transform: translateY(-50%);
+    }
+
+    .flow-node {
+      background-color: var(--bg-obsidian-sidebar);
+      border: 1px solid var(--border-gold);
+      border-radius: 12px;
+      width: 170px;
+      padding: 1.25rem 1rem;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      transition: var(--transition-smooth);
+    }
+
+    .flow-node:hover {
+      border-color: var(--gold-satin);
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(197, 168, 128, 0.2);
+    }
+
+    .flow-node-icon {
+      width: 40px;
+      height: 40px;
+      background-color: var(--gold-glass);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.75rem auto;
+      border: 1px solid var(--border-gold);
+    }
+
+    .flow-node-icon i {
+      color: var(--gold-satin);
+      font-size: 1.1rem;
+    }
+
+    .flow-node-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .flow-node-sub {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .flow-arrow-label {
+      position: absolute;
+      top: 35%;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--gold-satin);
+      background-color: var(--bg-obsidian-card);
+      border: 1px solid var(--border-gold);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      z-index: 3;
+      transform: translateX(-50%);
+    }
+
+    /* Team Members Section */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .team-card {
+      background-color: var(--bg-obsidian-card);
+      border: 1px solid var(--border-gold);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition-smooth);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .team-card:hover {
+      border-color: var(--border-gold-hover);
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(197, 168, 128, 0.12);
+    }
+
+    .team-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 60px;
+      height: 3px;
+      background-color: var(--gold-satin);
+      border-radius: 0 0 4px 4px;
+      transform: translateX(-50%);
+    }
+
+    .avatar-placeholder {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--gold-glass), rgba(107, 33, 168, 0.15));
+      border-radius: 50%;
+      border: 2px solid var(--border-gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem auto;
+      position: relative;
+      transition: var(--transition-smooth);
+    }
+
+    .team-card:hover .avatar-placeholder {
+      border-color: var(--gold-satin);
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+
+    .avatar-placeholder i {
+      font-size: 2.2rem;
+      color: var(--gold-satin);
+    }
+
+    .member-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+      color: var(--text-primary);
+    }
+
+    .member-nim {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.85rem;
+      color: var(--gold-satin);
+      font-weight: 600;
+      background-color: var(--gold-glass);
+      padding: 0.15rem 0.6rem;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 1rem;
+      border: 1px solid rgba(197, 168, 128, 0.1);
+    }
+
+    .member-role {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .member-jobdesc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-obsidian);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(197, 168, 128, 0.2);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(197, 168, 128, 0.4);
+    }
+
+    /* Toast Info */
+    .toast-whatsapp {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background-color: #25d366;
+      color: white;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+      cursor: pointer;
+      z-index: 99;
+      animation: pulse-ring 2s infinite;
+    }
+
+    .toast-whatsapp i {
+      font-size: 1.8rem;
+    }
+
+    @keyframes pulse-ring {
+      0% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7), 0 0 0 0 rgba(37, 211, 102, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(37, 211, 102, 0), 0 0 0 15px rgba(37, 211, 102, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0), 0 0 0 0 rgba(37, 211, 102, 0);
+      }
+    }
+
+    /* Responsive Queries */
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 6rem 2rem 2rem 2rem;
+        width: 100%;
+      }
+      .mobile-header {
+        display: flex;
+      }
+      .steps-layout {
+        grid-template-columns: 1fr;
+      }
+      .steps-list {
+        border-right: none;
+        padding-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 1.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2.2rem;
+      }
+      .hero-banner {
+        padding: 2.5rem 1.5rem;
+      }
+      .section-title {
+        font-size: 1.8rem;
+      }
+      .flow-flex {
+        min-width: unset;
+        flex-direction: column;
+        gap: 2rem;
+      }
+      .flow-flex::before {
+        display: none;
+      }
+      .flow-node {
+        width: 100%;
+        max-width: 300px;
+      }
+      .flow-arrow-label {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Header -->
+  <div class="mobile-header">
+    <a href="#" class="brand">
+      <i data-lucide="gamepad-2"></i>
+      <span>Sultan Top Up</span>
+    </a>
+    <button class="menu-toggle" id="menuToggle">
+      <i data-lucide="menu"></i>
+    </button>
+  </div>
+
+  <!-- Sidebar Container -->
+  <aside class="sidebar" id="sidebar">
+    <div>
+      <a href="#" class="brand">
+        <i data-lucide="gamepad-2"></i>
+        <span>Sultan Top Up</span>
+      </a>
+      
+      <ul class="nav-menu">
+        <li class="nav-item active" data-section="hero"><a href="#hero"><i data-lucide="home"></i> Beranda</a></li>
+        <li class="nav-item" data-section="overview"><a href="#overview"><i data-lucide="info"></i> Gambaran Umum</a></li>
+        <li class="nav-item" data-section="features"><a href="#features"><i data-lucide="cpu"></i> Fitur Utama</a></li>
+        <li class="nav-item" data-section="sequential"><a href="#sequential"><i data-lucide="git-commit"></i> Alur Sequential</a></li>
+        <li class="nav-item" data-section="diagram"><a href="#diagram"><i data-lucide="git-branch"></i> Diagram Alur</a></li>
+        <li class="nav-item" data-section="team"><a href="#team"><i data-lucide="users"></i> Tim Pengembang</a></li>
+      </ul>
+    </div>
+
+    <div class="sidebar-footer">
+      <p>Sultan Top Up &copy; 2026</p>
+      <a href="./index.md"><i data-lucide="file-text"></i> Versi Markdown (.md)</a>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-content" id="mainContent">
+    
+    <!-- Hero Section -->
+    <section id="hero" style="padding-top: 1rem;">
+      <div class="hero-banner">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <i data-lucide="crown"></i> Portal Layanan VIP Premium
+          </div>
+          <h1 class="hero-title">Dokumentasi Proyek Perangkat Lunak</h1>
+          <p class="hero-desc">
+            Panduan lengkap mengenai operasional sistem, detail alur transaksi pengguna (User Flow) hingga manajemen dashboard administrator (Admin Flow) pada portal **Sultan Top Up**.
+          </p>
+          <div class="hero-tags">
+            <span class="hero-tag">Next.js 14 (App Router)</span>
+            <span class="hero-tag">Express.js Node API</span>
+            <span class="hero-tag">Prisma ORM & SQLite</span>
+            <span class="hero-tag">Midtrans Payment & Manual Gateway</span>
+            <span class="hero-tag">Framer Motion</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Overview Section -->
+    <section id="overview">
+      <h2 class="section-title"><i data-lucide="info"></i> 1. Gambaran Umum Sistem</h2>
+      
+      <div class="overview-grid">
+        <div class="overview-card">
+          <div class="card-icon"><i data-lucide="terminal"></i></div>
+          <h3 class="card-title">Tentang Sultan Top Up</h3>
+          <p class="card-text">
+            Sistem web transaksi instan kelas dunia yang dirancang secara khusus untuk kebutuhan top up item/voucher game terpopuler secara efisien, aman, dan tanpa hambatan registrasi.
+          </p>
+        </div>
+
+        <div class="overview-card">
+          <div class="card-icon"><i data-lucide="target"></i></div>
+          <h3 class="card-title">Tujuan & Manfaat</h3>
+          <p class="card-text">
+            Menyediakan antarmuka berkelas premium VIP yang cepat dan andal bagi pengguna umum, serta menyederhanakan alur validasi dan administrasi bagi para pengelola/administrator sistem.
+          </p>
+        </div>
+
+        <div class="overview-card">
+          <div class="card-icon"><i data-lucide="users-round"></i></div>
+          <h3 class="card-title">Target Pengguna</h3>
+          <p class="card-text">
+            Terdiri dari dua entitas utama:
+            <ul>
+              <li><strong>Gamer / Pembeli:</strong> Pengguna akhir transaksi top-up kilat.</li>
+              <li><strong>Administrator:</strong> Tim pengelola transaksi & katalog.</li>
+            </ul>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features">
+      <h2 class="section-title"><i data-lucide="cpu"></i> 2. Modul & Fitur Unggulan</h2>
+      
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-header">
+            <i data-lucide="zap"></i>
+            <span class="feature-name">Transaksi 1 Detik</span>
+          </div>
+          <p class="feature-desc">Integrasi langsung ke katalog penyedia (API Digiflazz) menjamin pengiriman item secara instan.</p>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-header">
+            <i data-lucide="activity"></i>
+            <span class="feature-name">Live FOMO Ticker</span>
+          </div>
+          <p class="feature-desc">Baris notifikasi transaksi real-time berjalan horizontal yang otomatis ter-pause saat kursor di-hover.</p>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-header">
+            <i data-lucide="trophy"></i>
+            <span class="feature-name">Leaderboard Spender</span>
+          </div>
+          <p class="feature-desc">Gamifikasi visual dewan kehormatan untuk menampilkan 3 pembeli top up dengan nominal teratas.</p>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-header">
+            <i data-lucide="heart"></i>
+            <span class="feature-name">Karosel Testimonial</span>
+          </div>
+          <p class="feature-desc">Ulasan bintang emas berbalut glassmorphism dengan efek kilat bayangan saat disentuh.</p>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-header">
+            <i data-lucide="help-circle"></i>
+            <span class="feature-name">FAQ Accordion</span>
+          </div>
+          <p class="feature-desc">Seksi tanya-jawab interaktif legalitas dengan animasi tinggi dinamis berbasis Framer Motion.</p>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-header">
+            <i data-lucide="shield-check"></i>
+            <span class="feature-name">Self-Healing Admin</span>
+          </div>
+          <p class="feature-desc">Proteksi inisialisasi darurat yang menyajikan form registrasi admin jika database terdeteksi kosong.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sequential Steps Section -->
+    <section id="sequential">
+      <h2 class="section-title"><i data-lucide="git-commit"></i> 3. Panduan Fitur Secara Sequential</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        Silakan pilih tab peran di bawah ini untuk melihat langkah-langkah terurut jalannya sistem.
+      </p>
+
+      <div class="interactive-steps-container">
+        <!-- Tab Buttons -->
+        <div class="tabs-header">
+          <button class="tab-btn active" onclick="switchTab('user-flow')">
+            <i data-lucide="gamepad"></i> Alur Pengguna (User Flow)
+          </button>
+          <button class="tab-btn" onclick="switchTab('admin-flow')">
+            <i data-lucide="shield"></i> Alur Administrator (Admin Flow)
+          </button>
+        </div>
+
+        <!-- User Flow Tab Content -->
+        <div id="user-flow" class="tab-content active">
+          <div class="steps-layout">
+            <div class="steps-list" id="userStepsList">
+              <div class="step-list-item active" onclick="showStepDetail('user', 1)">
+                <div class="step-number">1</div>
+                <span>Akses Halaman Utama</span>
+              </div>
+              <div class="step-list-item" onclick="showStepDetail('user', 2)">
+                <div class="step-number">2</div>
+                <span>Memilih Game Favorit</span>
+              </div>
+              <div class="step-list-item" onclick="showStepDetail('user', 3)">
+                <div class="step-number">3</div>
+                <span>Mengisi Form Checkout</span>
+              </div>
+              <div class="step-list-item" onclick="showStepDetail('user', 4)">
+                <div class="step-number">4</div>
+                <span>Melakukan Pembayaran</span>
+              </div>
+              <div class="step-list-item" onclick="showStepDetail('user', 5)">
+                <div class="step-number">5</div>
+                <span>Lacak Status Transaksi</span>
+              </div>
+            </div>
+            
+            <div class="step-detail-card" id="userStepDetail">
+              <!-- Content injected dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Flow Tab Content -->
+        <div id="admin-flow" class="tab-content">
+          <div class="steps-layout">
+            <div class="steps-list" id="adminStepsList">
+              <div class="step-list-item active" onclick="showStepDetail('admin', 1)">
+                <div class="step-number">1</div>
+                <span>Self-Healing Inisialisasi</span>
+              </div>
+              <div class="step-list-item" onclick="showStepDetail('admin', 2)">
+                <div class="step-number">2</div>
+                <span>Autentikasi Login (JWT)</span>
+              </div>
+              <div class="step-list-item" onclick="showStepDetail('admin', 3)">
+                <div class="step-number">3</div>
+                <span>Pantau Dashboard Admin</span>
+              </div>
+              <div class="step-list-item" onclick="showStepDetail('admin', 4)">
+                <div class="step-number">4</div>
+                <span>Verifikasi Manual</span>
+              </div>
+            </div>
+            
+            <div class="step-detail-card" id="adminStepDetail">
+              <!-- Content injected dynamically -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Diagram Alur Section -->
+    <section id="diagram">
+      <h2 class="section-title"><i data-lucide="git-branch"></i> 4. Diagram Alur Sistem (Flow Diagram)</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Berikut adalah visualisasi alur transaksi data dari interaksi pengguna di frontend hingga pemrosesan dan verifikasi backend.
+      </p>
+
+      <div class="flow-diagram-container">
+        <div class="flow-flex">
+          
+          <div class="flow-node">
+            <div class="flow-node-icon"><i data-lucide="gamepad-2"></i></div>
+            <div class="flow-node-title">1. Pilih Game & Isi</div>
+            <div class="flow-node-sub">User mengisi form order</div>
+          </div>
+          
+          <span class="flow-arrow-label" style="left: 20%;">Checkout</span>
+          
+          <div class="flow-node">
+            <div class="flow-node-icon"><i data-lucide="credit-card"></i></div>
+            <div class="flow-node-title">2. Pilih Metode</div>
+            <div class="flow-node-sub">Sandbox vs Manual</div>
+          </div>
+          
+          <span class="flow-arrow-label" style="left: 45%;">Simulasi</span>
+
+          <div class="flow-node">
+            <div class="flow-node-icon"><i data-lucide="terminal"></i></div>
+            <div class="flow-node-title">3. Sandbox Page</div>
+            <div class="flow-node-sub">Trigger Bayar Instan</div>
+          </div>
+          
+          <span class="flow-arrow-label" style="left: 70%;">Pending</span>
+
+          <div class="flow-node">
+            <div class="flow-node-icon"><i data-lucide="user-check"></i></div>
+            <div class="flow-node-title">4. Admin Dashboard</div>
+            <div class="flow-node-sub">Konfirmasi Transfer</div>
+          </div>
+          
+          <span class="flow-arrow-label" style="left: 90%;">Approve</span>
+
+          <div class="flow-node" style="border-color: var(--gold-satin); box-shadow: 0 0 10px rgba(197, 168, 128, 0.2);">
+            <div class="flow-node-icon" style="background-color: var(--gold-glass);"><i data-lucide="check-circle-2"></i></div>
+            <div class="flow-node-title">5. Kirim Sukses</div>
+            <div class="flow-node-sub">Item terkirim via API</div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Team Members Section -->
+    <section id="team">
+      <h2 class="section-title"><i data-lucide="users"></i> 5. Tim Pengembang Proyek</h2>
+      <p style="color: var(--text-secondary);">
+        Kelompok pengembang web Sultan Top Up yang berdedikasi membangun portal layanan transaksi game premium ini:
+      </p>
+
+      <div class="team-grid">
+        
+        <div class="team-card">
+          <div class="avatar-placeholder"><i data-lucide="user"></i></div>
+          <h3 class="member-name">Bryan Alberta H. P.</h3>
+          <span class="member-nim">223140148</span>
+          <div class="member-role">Project Manager & Full-Stack Developer</div>
+          <p class="member-jobdesc">Memimpin manajemen tim, merancang arsitektur database, dan mengintegrasikan frontend ke backend server API.</p>
+        </div>
+
+        <div class="team-card">
+          <div class="avatar-placeholder"><i data-lucide="user"></i></div>
+          <h3 class="member-name">Ahmad Nurhidayat M.</h3>
+          <span class="member-nim">223140129</span>
+          <div class="member-role">Frontend UI/UX Developer</div>
+          <p class="member-jobdesc">Mengembangkan antarmuka, menyusun layout website, dan membuat animasi interaktif modern Framer Motion.</p>
+        </div>
+
+        <div class="team-card">
+          <div class="avatar-placeholder"><i data-lucide="user"></i></div>
+          <h3 class="member-name">Allen Virgustiyan P.</h3>
+          <span class="member-nim">223140136</span>
+          <div class="member-role">Backend API Developer</div>
+          <p class="member-jobdesc">Membangun server backend RESTful API dengan Express.js, menyusun skema database, dan integrasi Prisma ORM.</p>
+        </div>
+
+        <div class="team-card">
+          <div class="avatar-placeholder"><i data-lucide="user"></i></div>
+          <h3 class="member-name">Iswara Pranidana K. P.</h3>
+          <span class="member-nim">223140107</span>
+          <div class="member-role">Payment & Security Engineer</div>
+          <p class="member-jobdesc">Mengatur integrasi Midtrans, merancang proteksi endpoint API, dan mengelola validasi token JWT.</p>
+        </div>
+
+        <div class="team-card">
+          <div class="avatar-placeholder"><i data-lucide="user"></i></div>
+          <h3 class="member-name">Abdul Muntolib F.</h3>
+          <span class="member-nim">223140120</span>
+          <div class="member-role">Frontend Integration</div>
+          <p class="member-jobdesc">Menghubungkan visual komponen Next.js ke API backend, mengelola penanganan state form dan error log checkout.</p>
+        </div>
+
+        <div class="team-card">
+          <div class="avatar-placeholder"><i data-lucide="user"></i></div>
+          <h3 class="member-name">Dani Ahmad Kafabih</h3>
+          <span class="member-nim">223140145</span>
+          <div class="member-role">QA & System Analyst</div>
+          <p class="member-jobdesc">Melakukan pengujian fitur (Quality Assurance), dokumentasi pengujian alur, serta deployment aplikasi ke server.</p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- WhatsApp VIP Ring Pulsing Button (Static Demo) -->
+  <div class="toast-whatsapp" onclick="alert('Demo WhatsApp Support VIP 24/7 Sultan Top Up')">
+    <i data-lucide="message-square"></i>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Data step detail untuk User Flow
+    const userStepsData = {
+      1: {
+        title: "Akses Halaman Utama",
+        body: `
+          <p>Pengguna mengunjungi landing page utama Sultan Top Up di URL <code>/</code>. Sistem akan menyajikan:</p>
+          <ul>
+            <li><strong>Live Transaction Ticker:</strong> Baris text berjalan di bawah navbar yang berisi informasi transaksi sukses terkini dari pengguna lain. Baris text ini akan <strong>berhenti berputar otomatis saat di-hover</strong>.</li>
+            <li><strong>Leaderboard Dewan Kehormatan:</strong> Bagian visual yang menampilkan 3 besar pengguna pengeluaran top-up mingguan terbanyak untuk mendorong persaingan belanja VIP.</li>
+          </ul>
+        `
+      },
+      2: {
+        title: "Memilih Game Favorit",
+        body: `
+          <p>Pengguna melihat katalog card game di halaman utama. Pengguna memilih game dengan cara mengklik salah satu card game. Contoh game:</p>
+          <ul>
+            <li><strong>Mobile Legends: Bang Bang</strong></li>
+            <li><strong>Free Fire</strong></li>
+            <li><strong>Valorant</strong></li>
+            <li><strong>Genshin Impact</strong></li>
+          </ul>
+          <p>Sistem akan mengarahkan pengguna ke halaman Checkout detail game yang bersangkutan.</p>
+        `
+      },
+      3: {
+        title: "Mengisi Form Checkout",
+        body: `
+          <p>Di halaman detail game, pengguna mengisi formulir langkah demi langkah:</p>
+          <ul>
+            <li><strong>Langkah 1: Masukkan Akun Game.</strong> Isikan User ID dan Zone ID target.</li>
+            <li><strong>Langkah 2: Pilih Nominal/Item.</strong> Klik nominal diamond atau voucher game yang ingin diisi.</li>
+            <li><strong>Langkah 3: Pilih Metode Pembayaran.</strong> Tersedia opsi Sandbox Gateway (simulasi otomatis) atau Transfer Manual (BCA, DANA, GoPay).</li>
+          </ul>
+        `
+      },
+      4: {
+        title: "Melakukan Pembayaran",
+        body: `
+          <p>Setelah mengisi data dan mengklik tombol <strong>Beli Sekarang</strong>, alur pembayaran akan diproses berdasarkan metode terpilih:</p>
+          <ul>
+            <li><strong>Jika memilih Sandbox Gateway:</strong> Pengguna dialihkan ke halaman simulator <code>/sandbox/pay/[orderId]</code> untuk mengklik tombol simulasi status pembayaran (Sukses atau Gagal). Status transaksi langsung diperbarui ke database.</li>
+            <li><strong>Jika memilih Transfer Manual (BCA/DANA/GoPay):</strong> Pengguna dialihkan ke halaman <code>/success</code> dengan status <strong>PENDING</strong>. Pengguna melakukan transfer dengan nominal yang tertera ke nomor rekening admin yang dicantumkan, lalu mengklik tombol WhatsApp untuk memverifikasi bukti pembayaran ke Admin.</li>
+          </ul>
+        `
+      },
+      5: {
+        title: "Lacak Status Transaksi",
+        body: `
+          <p>Pengguna dapat memantau status pesanan mereka kapan saja melalui halaman <code>/lacak</code> dengan cara memasukkan kode unik Order ID.</p>
+          <ul>
+            <li><strong>PENDING:</strong> Menunggu pembayaran (atau menunggu verifikasi admin untuk pembayaran manual).</li>
+            <li><strong>SUCCESS:</strong> Pembayaran lunas, item game sukses terkirim ke User ID target.</li>
+            <li><strong>FAILED:</strong> Pembayaran gagal atau dibatalkan.</li>
+          </ul>
+        `
+      }
+    };
+
+    // Data step detail untuk Admin Flow
+    const adminStepsData = {
+      1: {
+        title: "Self-Healing Inisialisasi",
+        body: `
+          <p>Fitur pengamanan mandiri (self-healing) Sultan Top Up akan memeriksa database admin saat mengakses <code>/admin/login</code>.</p>
+          <ul>
+            <li>Jika database terdeteksi kosong (seperti pada saat deploy pertama kali), sistem secara otomatis mengalihkan ke form inisialisasi pendaftaran admin utama.</li>
+            <li>Ini memastikan admin dapat mengamankan panel tanpa perlu melakukan query database secara manual.</li>
+          </ul>
+        `
+      },
+      2: {
+        title: "Autentikasi Login (JWT)",
+        body: `
+          <p>Admin masuk melalui halaman login admin dengan mengisi username dan password yang valid.</p>
+          <div class="code-title"><i data-lucide="terminal"></i> Respon JWT Token payload</div>
+          <div class="code-block">
+{
+  "status": "success",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "message": "Login successful"
+}
+          </div>
+          <p>Token disimpan di local storage untuk mengautentikasi seluruh request operasional dashboard.</p>
+        `
+      },
+      3: {
+        title: "Pantau Dashboard Admin",
+        body: `
+          <p>Setelah login sukses, admin disajikan halaman dashboard utama <code>/admin</code>. Dashboard ini menyajikan:</p>
+          <ul>
+            <li><strong>Statistik Total:</strong> Total omzet penjualan, total transaksi sukses, pending, dan gagal.</li>
+            <li><strong>Tabel Transaksi:</strong> List seluruh transaksi terbaru dari pengguna beserta detail data game, nominal, status, dan opsi tindakan.</li>
+          </ul>
+        `
+      },
+      4: {
+        title: "Verifikasi Manual",
+        body: `
+          <p>Ketika pengguna mengirimkan bukti transfer manual via WhatsApp, admin mencocokkan mutasi bank. Selanjutnya:</p>
+          <ul>
+            <li>Admin mencari baris transaksi bersangkutan yang berstatus <code>PENDING</code> di tabel dashboard.</li>
+            <li>Admin menekan tombol <strong>Setujui (Approve)</strong> untuk menyelesaikan transaksi, yang akan otomatis memperbarui database menjadi <code>SUCCESS</code> dan mengirim item game ke ID user target melalui API Digiflazz.</li>
+            <li>Atau menekan tombol <strong>Tolak (Reject)</strong> untuk membatalkan dan mengubah status transaksi menjadi <code>FAILED</code>.</li>
+          </ul>
+        `
+      }
+    };
+
+    // Switch Antara Tab User Flow dan Admin Flow
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      const targetBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.innerHTML.includes(tabId === 'user-flow' ? 'Alur Pengguna' : 'Alur Administrator'));
+      if (targetBtn) targetBtn.classList.add('active');
+      
+      const targetContent = document.getElementById(tabId);
+      if (targetContent) targetContent.classList.add('active');
+
+      // Reset step active di tab baru
+      if (tabId === 'user-flow') {
+        showStepDetail('user', 1);
+      } else {
+        showStepDetail('admin', 1);
+      }
+    }
+
+    // Tampilkan Detail Step
+    function showStepDetail(type, stepNum) {
+      const isUser = type === 'user';
+      const stepsListId = isUser ? 'userStepsList' : 'adminStepsList';
+      const detailCardId = isUser ? 'userStepDetail' : 'adminStepDetail';
+      const stepsData = isUser ? userStepsData : adminStepsData;
+
+      // Update active class on list item
+      const listItems = document.querySelectorAll(`#${stepsListId} .step-list-item`);
+      listItems.forEach((item, index) => {
+        if (index + 1 === stepNum) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+
+      // Update detail card content
+      const step = stepsData[stepNum];
+      const detailCard = document.getElementById(detailCardId);
+      if (detailCard && step) {
+        detailCard.innerHTML = `
+          <h4 class="step-detail-title">Langkah <span>${stepNum}</span>: ${step.title}</h4>
+          <div class="step-detail-body">${step.body}</div>
+        `;
+        // Re-run lucide icons inside dynamically generated HTML
+        lucide.createIcons();
+      }
+    }
+
+    // Mobile Menu Toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    if (menuToggle && sidebar) {
+      menuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sidebar.classList.toggle('open');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!sidebar.contains(e.target) && e.target !== menuToggle) {
+          sidebar.classList.remove('open');
+        }
+      });
+    }
+
+    // Scroll Spy for Navigation Sidebar
+    const sections = document.querySelectorAll('section');
+    const navItems = document.querySelectorAll('.nav-item');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (pageYOffset >= (sectionTop - 150)) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('data-section') === current) {
+          item.classList.add('active');
+        }
+      });
+    });
+
+    // Load initial states
+    window.addEventListener('DOMContentLoaded', () => {
+      showStepDetail('user', 1);
+      showStepDetail('admin', 1);
+    });
+  </script>
+</body>
+</html>
