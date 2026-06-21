@@ -565,7 +565,10 @@ app.delete("/api/products/:id", verifyToken, async (req, res) => {
 });
 
 // START SERVER
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
-// Trigger nodemon restart 2
+if (!process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
+  });
+}
+
+export default app;
