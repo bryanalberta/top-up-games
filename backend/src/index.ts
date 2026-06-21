@@ -15,6 +15,14 @@ const app = express();
 app.set("trust proxy", 1);
 const port = process.env.PORT || 5000;
 
+// URL Rewrite Middleware: Support routes requested with or without '/api' prefix
+app.use((req: any, res: any, next: any) => {
+  if (!req.url.startsWith("/api") && req.url !== "/" && !req.url.includes("favicon")) {
+    req.url = `/api${req.url}`;
+  }
+  next();
+});
+
 // --- SECURITY MIDDLEWARE ---
 // 1. Helmet helps secure Express apps by setting HTTP response headers.
 app.use(helmet());
@@ -105,6 +113,11 @@ app.post("/api/auth/login", authLimiter, async (req, res) => {
 });
 
 // --- ROUTES ---
+
+// Root endpoint to avoid 404 when visited directly
+app.get("/", (req, res) => {
+  res.json({ status: "ok", message: "Sultan Top Up API is running" });
+});
 
 // Health check
 app.get("/api/health", (req, res) => {
