@@ -557,7 +557,21 @@ export default function HomeClient({ games }: { games: any[] }) {
         </div>
 
         {/* Dynamic Catalog Filtered Render */}
-        {filteredGames.length === 0 ? (
+        {!games || games.length === 0 ? (
+          <div className="text-center py-16 md:py-20 glass-premium rounded-[2.5rem] border-brand-500/20 max-w-2xl mx-auto p-8 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-red-500"></div>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-red-500/5 rounded-full blur-[60px] pointer-events-none"></div>
+            <Gamepad2 className="mx-auto text-red-400 mb-6 animate-pulse" size={56} />
+            <h3 className="text-white font-black text-2xl mb-4 font-display">Katalog Gagal Dimuat</h3>
+            <p className="text-theme-muted font-medium text-sm leading-relaxed mb-6 px-4">
+              Sistem tidak dapat terhubung ke API Server. Pastikan environment variable <code className="text-brand-300 font-mono bg-white/5 px-2 py-1 rounded">NEXT_PUBLIC_API_URL</code> pada Vercel Dashboard Frontend Anda telah diarahkan ke backend URL yang benar dan telah dilakukan redeployment.
+            </p>
+            <div className="bg-black/50 border border-white/5 rounded-2xl p-4 text-left font-mono text-xs space-y-2 text-white/80 max-w-md mx-auto">
+              <div className="truncate"><span className="text-brand-400">Target Fetch:</span> {process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}</div>
+              <div><span className="text-brand-400">Koneksi Server:</span> PENDING / TIMEOUT</div>
+            </div>
+          </div>
+        ) : filteredGames.length === 0 ? (
           <div className="text-center py-20 glass-premium rounded-[2.5rem] border-dashed border-2 border-white/10 max-w-2xl mx-auto">
             <Gamepad2 className="mx-auto text-theme-muted mb-4 animate-bounce" size={48} />
             <p className="text-white font-bold text-xl mb-2 font-display">Game Tidak Ditemukan</p>
