@@ -2,7 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 
-// Workaround for SQLite on Vercel read-only filesystem
+let dbUrl = process.env.DATABASE_URL;
+
 if (process.env.VERCEL) {
   const pathsToTry = [
     path.join(__dirname, "..", "dev.db"),
@@ -22,14 +23,18 @@ if (process.env.VERCEL) {
 
   try {
     if (srcPath) {
-      if (!fs.existsSync(destPath)) {
-        console.log(`Copying SQLite database from ${srcPath} to ${destPath}`);
-        fs.copyFileSync(srcPath, destPath);
-        fs.chmodSync(destPath, 0o666);
-      } else {
-        console.log(`SQLite database already exists at ${destPath}`);
+      console.log(`Copying SQLite database from ${srcPath} to ${destPath}`);
+      if (fs.existsSync(destPath)) {
+        try {
+          fs.unlinkSync(destPath);
+        } catch (e) {}
       }
-      process.env.DATABASE_URL = "file:" + destPath;
+      fs.copyFileSync(srcPath, destPath);
+      fs.chmodSync(destPath, 0o666);
+      
+      // Use 3 slashes for absolute path on Linux Vercel environment
+      dbUrl = "file:///tmp/dev.db";
+      process.env.DATABASE_URL = dbUrl;
     } else {
       console.error(`Could not find dev.db in any of the search paths: ${JSON.stringify(pathsToTry)}`);
     }
@@ -38,6 +43,12 @@ if (process.env.VERCEL) {
   }
 }
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: dbUrl,
+    },
+  },
+});
 
 export default prisma;
