@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Check, Clock, Copy, AlertCircle, Loader2, LockKeyhole, ScanSearch } from 'lucide-react';
 
-export default function SuccessPage() {
+function SuccessPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const trxId = searchParams.get('trx_id');
@@ -335,5 +335,22 @@ export default function SuccessPage() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center flex-col gap-6 bg-dark-bg text-brand-400">
+        <div className="w-16 h-16 relative">
+          <div className="absolute inset-0 border-4 border-brand-500/30 rounded-full"></div>
+          <div className="absolute inset-0 border-4 border-brand-400 rounded-full border-t-transparent animate-spin"></div>
+          <Loader2 className="absolute inset-0 m-auto animate-pulse opacity-50" size={24} />
+        </div>
+        <span className="font-bold tracking-widest uppercase text-sm animate-pulse drop-shadow-[0_0_10px_rgba(56,189,248,0.5)]">Memindai Database...</span>
+      </div>
+    }>
+      <SuccessPageContent />
+    </Suspense>
   );
 }
