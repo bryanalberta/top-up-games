@@ -1,6 +1,6 @@
 import HomeClient from '@/components/HomeClient';
 
-// Fetch games from our Node.js backend
+// Fetch games from our Node.js backend (auto-rebuild trigger)
 async function getGames() {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/games`, {
