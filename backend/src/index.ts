@@ -12,6 +12,7 @@ import { processDigiflazzTopUp } from "./utils/digiflazz";
 const JWT_SECRET = process.env.JWT_SECRET || "sultan_top_up_super_secret_key";
 
 const app = express();
+app.set("trust proxy", 1);
 const port = process.env.PORT || 5000;
 
 // --- SECURITY MIDDLEWARE ---
