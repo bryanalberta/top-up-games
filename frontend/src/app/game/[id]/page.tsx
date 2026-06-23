@@ -98,9 +98,17 @@ export default function GameDetail({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/games/${params.id}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         setGame(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch game:", err);
+        setGame({ error: true });
         setLoading(false);
       });
   }, [params.id]);
