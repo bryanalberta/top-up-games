@@ -13,6 +13,15 @@ const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrai
 export const metadata: Metadata = {
   title: 'Sultan Top Up | Platform Top Up Game Cepat & Termurah',
   description: 'Top up Diamond Mobile Legends, Free Fire, Valorant Points instan dan aman hanya di Sultan Top Up.',
+  icons: {
+    icon: [
+      { url: '/icon.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: [
+      { url: '/apple-icon.png', type: 'image/png', sizes: '512x512' },
+    ],
+    shortcut: '/icon.png',
+  },
 };
 
 export default function RootLayout({
